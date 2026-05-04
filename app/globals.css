@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --background: #fffef7;
+  --foreground: #8e5e3b;
+  
+  --primary-brown: #8e5e3b;
+  --accent-red: #ab4238;
+  --highlight-yellow: #ffe8a3;
+  --secondary-pink: #fcddec;
+  
+  /* Shadcn UI Variables (mapping to custom palette) */
+  --primary: var(--accent-red);
+  --primary-foreground: #ffffff;
+  
+  --secondary: var(--secondary-pink);
+  --secondary-foreground: var(--primary-brown);
+  
+  --muted: #f4f4f4;
+  --muted-foreground: #666666;
+  
+  --accent: var(--highlight-yellow);
+  --accent-foreground: var(--primary-brown);
+  
+  --destructive: #ff4d4f;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e2e2e2;
+  --input: #e2e2e2;
+  --ring: var(--accent-red);
+  
+  --radius: 1rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-primary-brown: var(--primary-brown);
+  --color-accent-red: var(--accent-red);
+  --color-highlight-yellow: var(--highlight-yellow);
+  --color-secondary-pink: var(--secondary-pink);
+  
+  --font-heading: var(--font-baloo), cursive;
+  --font-subheading: var(--font-freude), var(--font-baloo), cursive;
+  --font-body: var(--font-nunito), sans-serif;
+  
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Custom Font Placeholder */
+@font-face {
+  font-family: 'SVN-Freude';
+  src: url('/fonts/svn-freude.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-freude: 'SVN-Freude';
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-nunito), sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-baloo), cursive;
+  font-weight: 800;
 }
