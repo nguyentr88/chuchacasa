@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh như lót ly, pouch, ví, thúng vải...",
 };
 
+import Header from "./components/Header";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,6 +32,7 @@ export default function RootLayout({
       className={`${baloo2.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-body text-primary-brown bg-background">
+        <Header />
         {children}
       </body>
     </html>

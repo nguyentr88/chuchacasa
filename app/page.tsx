@@ -4,22 +4,6 @@ import { Search, User, ShoppingCart } from "lucide-react";
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background font-body text-primary-brown">
-      <header className="p-6 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <div className="text-3xl font-heading text-accent-red tracking-tight">chucha.casa</div>
-        
-        <div className="flex items-center gap-6 text-primary-brown">
-          <button className="hover:text-accent-red transition-colors cursor-pointer">
-            <Search size={24} strokeWidth={2.5} />
-          </button>
-          <button className="hover:text-accent-red transition-colors cursor-pointer">
-            <User size={24} strokeWidth={2.5} />
-          </button>
-          <button className="hover:text-accent-red transition-colors cursor-pointer">
-            <ShoppingCart size={24} strokeWidth={2.5} />
-          </button>
-        </div>
-      </header>
-
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
         <div className="relative w-56 h-56 mb-10">
           <div className="absolute inset-0 bg-secondary-pink rounded-full -rotate-6 scale-110 opacity-50 blur-xl"></div>
