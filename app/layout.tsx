@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh như lót ly, pouch, ví, thúng vải...",
 };
 
-import Header from "./components/Header";
+import Header from "@/components/Header";
 
 export default function RootLayout({
   children,

@@ -31,9 +31,9 @@ export default function Header() {
           <button className="hover:text-accent-red transition-colors cursor-pointer">
             <Search size={24} strokeWidth={2.5} />
           </button>
-          <button className="hover:text-accent-red transition-colors cursor-pointer">
+          <Link href="/login" className="hover:text-accent-red transition-colors cursor-pointer">
             <User size={24} strokeWidth={2.5} />
-          </button>
+          </Link>
           <button className="hover:text-accent-red transition-colors cursor-pointer">
             <ShoppingCart size={24} strokeWidth={2.5} />
           </button>
