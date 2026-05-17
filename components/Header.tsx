@@ -24,6 +24,9 @@ export default function Header() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Trạng thái load thực sự: đang truy vấn DB hoặc đang trong thời gian chờ debounce
+  const isActuallyLoading = isSearching || (searchKeyword.trim() !== "" && searchKeyword !== debouncedKeyword);
+
   // 1. Debounce từ khóa tìm kiếm (chờ 400ms sau khi dừng gõ để tránh spam DB)
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -141,8 +144,22 @@ export default function Header() {
             if (e.target === e.currentTarget) setIsSearchOpen(false);
           }}
         >
-          <div className="bg-white rounded-[2.5rem] border-4 border-secondary-pink/20 shadow-2xl max-w-2xl w-full overflow-hidden p-6 animate-in zoom-in-95 duration-300">
-            {/* Header nhập liệu */}
+          <div className="bg-white rounded-[2.5rem] border-4 border-secondary-pink/20 shadow-2xl max-w-2xl w-full overflow-hidden p-6 animate-in zoom-in-95 duration-300 relative">
+            {/* Header Modal: Tiêu đề + Nút Đóng Modal */}
+            <div className="flex justify-between items-center mb-5 px-1">
+              <h3 className="font-heading text-lg text-primary-brown flex items-center gap-2">
+                <span>Tìm kiếm sản phẩm</span>
+                <span className="text-xs opacity-60 font-body font-normal">(Esc để đóng)</span>
+              </h3>
+              <button 
+                onClick={() => setIsSearchOpen(false)}
+                className="hover:text-accent-red transition-colors text-primary-brown/50 hover:bg-secondary-pink/20 p-2 rounded-full cursor-pointer duration-200"
+              >
+                <X size={20} strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {/* Khung nhập liệu */}
             <div className="relative flex items-center mb-6">
               <Search size={20} className="absolute left-4 text-accent-red" />
               <input
@@ -160,26 +177,20 @@ export default function Header() {
               {searchKeyword.trim() && (
                 <button 
                   onClick={() => setSearchKeyword("")}
-                  className="absolute right-12 hover:text-accent-red transition-colors text-primary-brown/50 cursor-pointer"
+                  className="absolute right-4 hover:text-accent-red transition-colors text-primary-brown/50 cursor-pointer p-1"
                 >
                   <X size={18} />
                 </button>
               )}
-              <button 
-                onClick={() => setIsSearchOpen(false)}
-                className="absolute right-4 hover:text-accent-red transition-colors text-primary-brown/50 cursor-pointer"
-              >
-                <X size={20} strokeWidth={2.5} />
-              </button>
             </div>
 
             {/* Nội dung kết quả Autocomplete */}
             <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-              {isSearching ? (
-                // Đang quét dữ liệu
-                <div className="py-12 flex justify-center items-center gap-2">
-                  <Loader2 className="animate-spin text-accent-red" size={24} />
-                  <span className="text-sm font-bold text-primary-brown/60">Đang lục tìm kho báu... 🧸</span>
+              {isActuallyLoading ? (
+                // Đang quét dữ liệu hoặc chờ debounce - Nằm giữa trang danh sách gợi ý
+                <div className="h-[200px] flex flex-col justify-center items-center gap-3">
+                  <Loader2 className="animate-spin text-accent-red" size={28} strokeWidth={2.5} />
+                  <span className="text-sm font-bold text-primary-brown/60">Đang tìm món quà bạn cần... 🧸</span>
                 </div>
               ) : !searchKeyword.trim() ? (
                 // Trạng thái gợi ý ban đầu
@@ -255,16 +266,18 @@ export default function Header() {
                   </button>
                 </div>
               ) : (
-                // Trạng thái trống
-                <div className="text-center py-10">
-                  <span className="text-5xl select-none">🧸</span>
-                  <p className="font-heading text-lg text-primary-brown mt-3">
-                    Hic, không tìm thấy sản phẩm nào phù hợp...
-                  </p>
-                  <p className="text-xs text-primary-brown/50 mt-1 max-w-sm mx-auto leading-relaxed">
-                    Bạn thử nhập một từ khóa khác (ví dụ: túi vải, lót ly, ví...) xem sao nhé!
-                  </p>
-                </div>
+                // Trạng thái trống thực tế (chỉ hiển thị khi đã load xong hoàn toàn và không có kết quả)
+                !isActuallyLoading && (
+                  <div className="text-center py-10">
+                    <span className="text-5xl select-none">🧸</span>
+                    <p className="font-heading text-lg text-primary-brown mt-3">
+                      Hic, không tìm thấy sản phẩm nào phù hợp...
+                    </p>
+                    <p className="text-xs text-primary-brown/50 mt-1 max-w-sm mx-auto leading-relaxed">
+                      Bạn thử nhập một từ khóa khác (ví dụ: túi vải, lót ly, ví...) xem sao nhé!
+                    </p>
+                  </div>
+                )
               )}
             </div>
           </div>
