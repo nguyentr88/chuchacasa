@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Search, User, ShoppingCart } from "lucide-react";
 
 export default function Home() {
   return (
@@ -51,11 +50,13 @@ export default function Home() {
             <h3 className="text-2xl font-heading mb-3 text-primary-brown">Đồ chơi gấu bông</h3>
             <p className="text-base opacity-70">Những người bạn mềm mại, sẵn sàng ôm ấp mọi lúc.</p>
           </div>
+          
           <div className="group p-10 bg-white/60 rounded-[3rem] border-2 border-highlight-yellow transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="text-5xl mb-6 group-hover:scale-125 transition-transform inline-block">🎁</div>
             <h3 className="text-2xl font-heading mb-3 text-primary-brown">Quà tặng độc đáo</h3>
             <p className="text-base opacity-70">Mỗi món quà là một câu chuyện riêng biệt.</p>
           </div>
+          
           <div className="group p-10 bg-white/60 rounded-[3rem] border-2 border-secondary-pink transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="text-5xl mb-6 group-hover:scale-125 transition-transform inline-block">✨</div>
             <h3 className="text-2xl font-heading mb-3 text-primary-brown">Phụ kiện cute</h3>
