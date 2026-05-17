@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  /* Colors */
   --background: #fffef7;
   --foreground: #8e5e3b;
   
@@ -10,7 +9,6 @@
   --highlight-yellow: #ffe8a3;
   --secondary-pink: #fcddec;
   
-  /* Shadcn UI Variables (mapping to custom palette) */
   --primary: var(--accent-red);
   --primary-foreground: #ffffff;
   
@@ -52,7 +50,6 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
-/* Custom Font Placeholder */
 @font-face {
   font-family: 'SVN-Freude';
   src: url('/fonts/svn-freude.woff2') format('woff2');

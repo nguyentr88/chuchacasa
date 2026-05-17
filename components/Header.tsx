@@ -102,6 +102,20 @@ export default function Header() {
             chucha.casa
           </Link>
           
+          <Link 
+            href="/refund-policy" 
+            className={`font-heading text-xl transition-all hover:scale-105 duration-200 ${
+              pathname === "/refund-policy" 
+                ? "text-accent-red font-bold relative" 
+                : "text-primary-brown hover:text-accent-red"
+            }`}
+          >
+            Chính sách hoàn tiền
+            {pathname === "/refund-policy" && (
+              <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-accent-red rounded-full" />
+            )}
+          </Link>
+          
           <div className="flex items-center gap-6 text-primary-brown">
             {/* Click mở Modal tìm kiếm */}
             <button 
