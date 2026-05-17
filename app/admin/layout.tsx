@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, ShoppingBag, Grid, Home, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Grid, Home, LogOut, FileText } from "lucide-react";
 import Image from "next/image";
 
 export default async function AdminLayout({
@@ -67,6 +67,13 @@ export default async function AdminLayout({
           >
             <Grid size={20} className="text-accent-red" />
             <span>Phân loại</span>
+          </Link>
+          <Link
+            href="/admin/refund-policy"
+            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
+          >
+            <FileText size={20} className="text-accent-red" />
+            <span>Chính sách hoàn tiền</span>
           </Link>
 
           <div className="pt-6 border-t border-primary-brown/10">

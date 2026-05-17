@@ -291,3 +291,55 @@ export async function getProductByIdAction(id: string) {
     return { error: error.message || "Đã xảy ra lỗi khi lấy chi tiết sản phẩm." };
   }
 }
+
+// ==========================================
+// SYSTEM CONFIG / SETTING ACTIONS
+// ==========================================
+
+export async function getSettingAction(key: string, defaultValue: string) {
+  try {
+    let setting = await prisma.setting.findUnique({
+      where: { key },
+    });
+
+    if (!setting) {
+      try {
+        // Tự động khởi tạo giá trị mặc định trong database nếu chưa tồn tại (Self-healing)
+        setting = await prisma.setting.create({
+          data: { key, value: defaultValue },
+        });
+      } catch {
+        // Dự phòng khi ghi đồng thời bị tranh chấp thì trả về giá trị mặc định trực tiếp
+        return { value: defaultValue };
+      }
+    }
+
+    return { value: setting.value };
+  } catch (error: any) {
+    return { value: defaultValue, error: error.message };
+  }
+}
+
+export async function updateSettingAction(key: string, value: string) {
+  try {
+    await requireAdmin();
+
+    if (!key) {
+      return { error: "Mã cấu hình (key) không được để trống!" };
+    }
+
+    const setting = await prisma.setting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    });
+
+    // Làm mới bộ nhớ đệm của trang công khai và trang admin soạn thảo
+    revalidatePath("/refund-policy");
+    revalidatePath("/admin/refund-policy");
+
+    return { success: "Cập nhật cấu hình hệ thống thành công!", setting };
+  } catch (error: any) {
+    return { error: error.message || "Đã xảy ra lỗi khi cập nhật cấu hình hệ thống." };
+  }
+}
