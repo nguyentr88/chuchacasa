@@ -1,9 +1,14 @@
 "use server";
 
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
 import { authService } from "@/services/authService";
-import { LoginFormData, RegisterFormData, LoginSchema, RegisterSchema } from "@/types/auth";
+import {
+  LoginFormData,
+  RegisterFormData,
+  LoginSchema,
+  RegisterSchema,
+} from "@/types/auth";
 
 export async function loginAction(values: LoginFormData) {
   const validatedFields = LoginSchema.safeParse(values);
@@ -42,14 +47,14 @@ export async function registerAction(values: RegisterFormData) {
 
   try {
     await authService.register(validatedFields.data);
-    
+
     // Automatically log the user in after registration
     await signIn("credentials", {
       email: validatedFields.data.email,
       password: validatedFields.data.password,
       redirectTo: "/",
     });
-    
+
     return { success: "Đăng ký thành công!" };
   } catch (error: any) {
     return { error: error.message || "Đã có lỗi xảy ra khi đăng ký." };
@@ -58,4 +63,8 @@ export async function registerAction(values: RegisterFormData) {
 
 export async function googleLoginAction() {
   await signIn("google", { redirectTo: "/" });
+}
+
+export async function logoutAction() {
+  await signOut({ redirectTo: "/login" });
 }

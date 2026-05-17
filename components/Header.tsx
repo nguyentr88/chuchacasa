@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, User, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
+import UserMenu from "./UserMenu";
 
 export default function Header() {
   const pathname = usePathname();
@@ -31,9 +32,7 @@ export default function Header() {
           <button className="hover:text-accent-red transition-colors cursor-pointer">
             <Search size={24} strokeWidth={2.5} />
           </button>
-          <Link href="/login" className="hover:text-accent-red transition-colors cursor-pointer">
-            <User size={24} strokeWidth={2.5} />
-          </Link>
+          <UserMenu />
           <button className="hover:text-accent-red transition-colors cursor-pointer">
             <ShoppingCart size={24} strokeWidth={2.5} />
           </button>

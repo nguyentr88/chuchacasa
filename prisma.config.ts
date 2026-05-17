@@ -1,7 +1,6 @@
 import { config } from "dotenv";
 import { defineConfig } from "@prisma/config";
 
-// Tải biến môi trường từ file .env trước khi đọc config
 config();
 
 export default defineConfig({

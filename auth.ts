@@ -13,6 +13,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" }, // Require JWT strategy when using Credentials provider
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        // Truy vấn trực tiếp DB để lấy quyền role thực tế (áp dụng hoàn hảo cho cả Google OAuth & Credentials)
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { role: true }
+        });
+        token.role = dbUser?.role || "USER";
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).role = token.role;
+        (session.user as any).id = token.id;
+      }
+      return session;
+    },
+  },
   providers: [
     CredentialsProvider({
       name: "Tài khoản",

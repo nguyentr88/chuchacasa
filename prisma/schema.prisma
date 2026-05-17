@@ -1,15 +1,16 @@
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../lib/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-// -----------------------------------------------------------------------------
-// Auth Models (NextAuth.js)
-// -----------------------------------------------------------------------------
+enum Role {
+  USER
+  ADMIN
+}
 
 model User {
   id            String    @id @default(cuid())
@@ -18,6 +19,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?   // Dành cho đăng nhập bằng Email/Password
+  role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
@@ -49,4 +51,45 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  code      String    @unique // Mã loại (e.g. CC07, LOTLY)
+  name      String    // Tên loại (e.g. Lót ly)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id            String           @id @default(cuid())
+  name          String
+  sku           String?          // Mã SKU tiền tố chung
+  description   String?          @db.Text
+  price         Int              // Giá gốc (VNĐ)
+  hasDiscount   Boolean          @default(false)
+  discountPrice Int?             // Giá giảm (VNĐ)
+  images        String[]         // Mảng chứa các link ảnh sản phẩm
+  sizes         String[]         // Các kích thước sẵn có chung
+  colors        String[]         // Các màu sắc sẵn có chung
+  categoryId    String
+  category      Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  variants      ProductVariant[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku        String?  // SKU riêng cho biến thể (ví dụ: CC07-RED-S)
+  color      String?  // Tên màu (ví dụ: "Đỏ")
+  size       String?  // Kích thước (ví dụ: "S")
+  price      Int?     // Giá riêng cho biến thể (nếu có)
+  image      String?  // Ảnh riêng tương ứng với màu sắc này
+  stock      Int      @default(0) // Số lượng tồn kho
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

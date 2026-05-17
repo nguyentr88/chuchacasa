@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 };
 
 import Header from "@/components/Header";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 export default function RootLayout({
   children,
@@ -32,8 +33,10 @@ export default function RootLayout({
       className={`${baloo2.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-body text-primary-brown bg-background">
-        <Header />
-        {children}
+        <SessionProvider>
+          <Header />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

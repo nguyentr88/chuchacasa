@@ -33,9 +33,24 @@ export default function LoginPage() {
         .then((data) => {
           if (data?.error) {
             setError(data.error);
+          } else {
+            // Lấy callbackUrl từ query params nếu có, mặc định về "/"
+            const searchParams = new URLSearchParams(window.location.search);
+            const callbackUrl = searchParams.get("callbackUrl") || "/";
+            window.location.href = callbackUrl;
           }
         })
-        .catch(() => setError("Đã có lỗi xảy ra."));
+        .catch((err: any) => {
+          // Next.js Server Actions ném lỗi NEXT_REDIRECT khi chuyển hướng thành công
+          const isRedirect = err?.message?.includes("NEXT_REDIRECT");
+          if (isRedirect) {
+            const searchParams = new URLSearchParams(window.location.search);
+            const callbackUrl = searchParams.get("callbackUrl") || "/";
+            window.location.href = callbackUrl;
+          } else {
+            setError("Email hoặc mật khẩu không chính xác!");
+          }
+        });
     });
   };
 
