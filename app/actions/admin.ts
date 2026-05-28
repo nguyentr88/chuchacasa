@@ -92,7 +92,7 @@ export interface CreateProductInput {
   images: string[];
   sizes: string[];
   colors: string[];
-  categoryId: string;
+  categoryId?: string;
   variants: VariantInput[];
 }
 
@@ -100,8 +100,8 @@ export async function createProductAction(data: CreateProductInput) {
   try {
     await requireAdmin();
 
-    if (!data.name || !data.price || !data.categoryId) {
-      return { error: "Vui lòng điền đầy đủ các thông tin bắt buộc!" };
+    if (!data.name || !data.price) {
+      return { error: "Vui lòng điền đầy đủ tên và giá sản phẩm!" };
     }
 
     // Thực hiện tạo sản phẩm và các biến thể trong 1 Transaction
@@ -118,7 +118,7 @@ export async function createProductAction(data: CreateProductInput) {
           images: data.images,
           sizes: data.sizes,
           colors: data.colors,
-          categoryId: data.categoryId,
+          categoryId: data.categoryId || null,
         },
       });
 
@@ -154,8 +154,8 @@ export async function updateProductAction(id: string, data: CreateProductInput) 
   try {
     await requireAdmin();
 
-    if (!id || !data.name || !data.price || !data.categoryId) {
-      return { error: "Vui lòng điền đầy đủ các thông tin bắt buộc!" };
+    if (!id || !data.name || !data.price) {
+      return { error: "Vui lòng điền đầy đủ tên và giá sản phẩm!" };
     }
 
     await prisma.$transaction(async (tx) => {
@@ -172,7 +172,7 @@ export async function updateProductAction(id: string, data: CreateProductInput) 
           images: data.images,
           sizes: data.sizes,
           colors: data.colors,
-          categoryId: data.categoryId,
+          categoryId: data.categoryId || null,
         },
       });
 

@@ -73,8 +73,8 @@ model Product {
   images        String[]         // Mảng chứa các link ảnh sản phẩm
   sizes         String[]         // Các kích thước sẵn có chung
   colors        String[]         // Các màu sắc sẵn có chung
-  categoryId    String
-  category      Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categoryId    String?
+  category      Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   variants      ProductVariant[]
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt

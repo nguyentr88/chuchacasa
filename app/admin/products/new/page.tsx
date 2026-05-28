@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package } from "lucide-react";
+import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package, Upload } from "lucide-react";
 import { getCategoriesAction, createProductAction } from "@/app/actions/admin";
 
 interface Category {
@@ -36,18 +36,14 @@ export default function NewProductPage() {
   const [discountPrice, setDiscountPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Images List
   const [images, setImages] = useState<string[]>([]);
   const [newImageUrl, setNewImageUrl] = useState("");
 
-  // Preset cute placeholders for testing
-  const presetImages = [
-    "/globe.svg",
-    "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=300",
-    "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=300",
-    "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=300"
-  ];
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   // Attribute Tag States
   const [colors, setColors] = useState<string[]>([]);
@@ -116,7 +112,7 @@ export default function NewProductPage() {
     setVariants(newVariants);
   }, [colors, sizes, sku]);
 
-  // Thêm ảnh mới từ Input
+  // Thêm ảnh mới từ Input URL
   const handleAddImage = (url: string) => {
     if (!url) return;
     const cleanUrl = url.trim();
@@ -124,6 +120,50 @@ export default function NewProductPage() {
       setImages([...images, cleanUrl]);
     }
     setNewImageUrl("");
+  };
+
+  // Upload ảnh từ thiết bị
+  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setFormError("Chỉ chấp nhận file hình ảnh");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("Kích thước file tối đa 5MB");
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setFormError("");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Lỗi upload ảnh");
+      }
+
+      setImages((prev) => [...prev, data.url]);
+    } catch (err: any) {
+      setFormError(err.message);
+    } finally {
+      setIsUploadingImage(false);
+      // Xóa giá trị input để có thể chọn lại cùng 1 file
+      if (e.target) {
+        e.target.value = '';
+      }
+    }
   };
 
   // Xóa ảnh
@@ -178,40 +218,39 @@ export default function NewProductPage() {
   // Submit Lưu Sản Phẩm
   const handleSaveProduct = () => {
     setFormError("");
+    const errors: Record<string, string> = {};
 
     if (!name.trim()) {
-      setFormError("Vui lòng nhập tên sản phẩm!");
-      return;
+      errors.name = "Vui lòng nhập tên sản phẩm!";
     }
     
     const basePriceNum = parseInt(price);
     if (isNaN(basePriceNum) || basePriceNum <= 0) {
-      setFormError("Vui lòng nhập giá gốc hợp lệ!");
-      return;
+      errors.price = "Vui lòng nhập giá gốc hợp lệ!";
     }
 
     let discPriceNum: number | undefined = undefined;
     if (hasDiscount) {
       discPriceNum = parseInt(discountPrice);
       if (isNaN(discPriceNum) || discPriceNum <= 0) {
-        setFormError("Vui lòng nhập giá giảm hợp lệ!");
-        return;
+        errors.discountPrice = "Vui lòng nhập giá giảm hợp lệ!";
+      } else if (discPriceNum >= basePriceNum) {
+        errors.discountPrice = "Giá giảm phải nhỏ hơn giá gốc sản phẩm!";
       }
-      if (discPriceNum >= basePriceNum) {
-        setFormError("Giá giảm phải nhỏ hơn giá gốc sản phẩm!");
-        return;
-      }
-    }
-
-    if (!categoryId) {
-      setFormError("Vui lòng chọn phân loại sản phẩm!");
-      return;
     }
 
     if (images.length === 0) {
-      setFormError("Vui lòng thêm ít nhất 1 hình ảnh cho sản phẩm!");
+      errors.images = "Vui lòng thêm ít nhất 1 hình ảnh cho sản phẩm!";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setFormError("Vui lòng kiểm tra lại các thông tin bị lỗi (in đỏ)!");
+      setTimeout(() => setFormError(""), 4000); // Ẩn toast sau 4 giây
       return;
     }
+
+    setFieldErrors({});
 
     // Format biến thể để gửi lên server action
     const formattedVariants = variants.map((v) => ({
@@ -235,7 +274,7 @@ export default function NewProductPage() {
           images,
           sizes,
           colors,
-          categoryId,
+          categoryId: categoryId || undefined,
           variants: formattedVariants,
         });
 
@@ -268,28 +307,9 @@ export default function NewProductPage() {
             </p>
           </div>
         </div>
-
-        <button
-          onClick={handleSaveProduct}
-          disabled={isPending}
-          className="px-6 py-3.5 bg-accent-red text-white font-bold rounded-full text-base shadow-[0_5px_0_rgb(130,46,38)] hover:shadow-[0_2px_0_rgb(130,46,38)] hover:translate-y-[3px] active:shadow-none active:translate-y-[5px] transition-all flex items-center gap-2 cursor-pointer shadow-md self-stretch sm:self-auto justify-center disabled:opacity-70"
-        >
-          {isPending ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            <>
-              <Save size={18} />
-              Lưu & Đăng bán
-            </>
-          )}
-        </button>
       </div>
 
-      {formError && (
-        <div className="bg-red-50 text-red-500 p-4 rounded-3xl text-sm font-bold border border-red-100 text-center animate-shake">
-          {formError}
-        </div>
-      )}
+
 
       {/* Main Form Body Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
@@ -304,14 +324,15 @@ export default function NewProductPage() {
 
             {/* Product Name */}
             <div>
-              <label className="block text-xs font-bold mb-2 ml-4">Tên sản phẩm *</label>
+              <label className={`block text-xs font-bold mb-2 ml-4 ${fieldErrors.name ? "text-red-500" : ""}`}>Tên sản phẩm *</label>
               <input
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => { setName(e.target.value); setFieldErrors(prev => ({...prev, name: ""})); }}
                 placeholder="Ví dụ: Pouch hoa nhí thêu tay"
-                className="w-full px-5 py-3.5 bg-white border-2 border-primary-brown/10 rounded-full focus:border-accent-red outline-none transition-all text-sm font-medium"
+                className={`w-full px-5 py-3.5 bg-white border-2 rounded-full focus:outline-none transition-all text-sm font-medium ${fieldErrors.name ? "border-red-500 focus:border-red-500" : "border-primary-brown/10 focus:border-accent-red"}`}
               />
+              {fieldErrors.name && <p className="text-red-500 text-xs font-bold mt-1.5 ml-4">{fieldErrors.name}</p>}
             </div>
 
             {/* SKU & Category selector */}
@@ -328,24 +349,33 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold mb-2 ml-4">Phân loại sản phẩm *</label>
+                <label className="block text-xs font-bold mb-2 ml-4">Phân loại sản phẩm</label>
                 {loadingCats ? (
                   <div className="w-full py-3.5 bg-white border-2 border-primary-brown/10 rounded-full flex items-center justify-center">
                     <Loader2 size={16} className="animate-spin text-accent-red" />
                   </div>
+                ) : categories.length === 0 ? (
+                  <div className="w-full px-5 py-3.5 bg-zinc-50 border-2 border-primary-brown/10 rounded-full text-sm font-medium text-primary-brown/50 italic">
+                    Chưa có phân loại nào
+                  </div>
                 ) : (
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-5 py-3.5 bg-white border-2 border-primary-brown/10 rounded-full focus:border-accent-red outline-none transition-all text-sm font-bold text-primary-brown cursor-pointer"
-                  >
-                    {categories.length === 0 && <option value="">Chưa có phân loại</option>}
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} ({c.code})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      className="w-full px-5 py-3.5 bg-white border-2 border-primary-brown/10 rounded-full focus:border-accent-red outline-none transition-all text-sm font-bold text-primary-brown cursor-pointer appearance-none"
+                    >
+                      <option value="">-- Không chọn phân loại --</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} ({c.code})
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none">
+                      <svg className="w-4 h-4 text-primary-brown/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -353,17 +383,18 @@ export default function NewProductPage() {
             {/* Prices */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
               <div>
-                <label className="block text-xs font-bold mb-2 ml-4">Giá gốc (VNĐ) *</label>
+                <label className={`block text-xs font-bold mb-2 ml-4 ${fieldErrors.price ? "text-red-500" : ""}`}>Giá gốc (VNĐ) *</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-brown/40" size={16} />
+                  <DollarSign className={`absolute left-4 top-1/2 -translate-y-1/2 ${fieldErrors.price ? "text-red-500" : "text-primary-brown/40"}`} size={16} />
                   <input
                     type="number"
                     value={price}
-                    onChange={(e) => setPrice(e.target.value)}
+                    onChange={(e) => { setPrice(e.target.value); setFieldErrors(prev => ({...prev, price: ""})); }}
                     placeholder="120000"
-                    className="w-full pl-10 pr-4 py-3.5 bg-white border-2 border-primary-brown/10 rounded-full focus:border-accent-red outline-none transition-all text-sm font-bold"
+                    className={`w-full pl-10 pr-4 py-3.5 bg-white border-2 rounded-full focus:outline-none transition-all text-sm font-bold ${fieldErrors.price ? "border-red-500 text-red-500 focus:border-red-500" : "border-primary-brown/10 focus:border-accent-red"}`}
                   />
                 </div>
+                {fieldErrors.price && <p className="text-red-500 text-xs font-bold mt-1.5 ml-4">{fieldErrors.price}</p>}
               </div>
 
               <div className="pb-3 flex items-center justify-center">
@@ -382,17 +413,18 @@ export default function NewProductPage() {
 
               {hasDiscount && (
                 <div className="animate-in slide-in-from-left-2 duration-200">
-                  <label className="block text-xs font-bold mb-2 ml-4 text-accent-red">Giá sau giảm (VNĐ) *</label>
+                  <label className={`block text-xs font-bold mb-2 ml-4 ${fieldErrors.discountPrice ? "text-red-500" : "text-accent-red"}`}>Giá sau giảm (VNĐ) *</label>
                   <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-red/40" size={16} />
+                    <DollarSign className={`absolute left-4 top-1/2 -translate-y-1/2 ${fieldErrors.discountPrice ? "text-red-500" : "text-accent-red/40"}`} size={16} />
                     <input
                       type="number"
                       value={discountPrice}
-                      onChange={(e) => setDiscountPrice(e.target.value)}
+                      onChange={(e) => { setDiscountPrice(e.target.value); setFieldErrors(prev => ({...prev, discountPrice: ""})); }}
                       placeholder="95000"
-                      className="w-full pl-10 pr-4 py-3.5 bg-white border-2 border-accent-red/20 focus:border-accent-red rounded-full outline-none transition-all text-sm font-bold text-accent-red"
+                      className={`w-full pl-10 pr-4 py-3.5 bg-white border-2 rounded-full focus:outline-none transition-all text-sm font-bold ${fieldErrors.discountPrice ? "border-red-500 text-red-500 focus:border-red-500" : "border-accent-red/20 focus:border-accent-red text-accent-red"}`}
                     />
                   </div>
+                  {fieldErrors.discountPrice && <p className="text-red-500 text-xs font-bold mt-1.5 ml-4">{fieldErrors.discountPrice}</p>}
                 </div>
               )}
             </div>
@@ -411,11 +443,12 @@ export default function NewProductPage() {
           </div>
 
           {/* Card 2: Image Gallery */}
-          <div className="bg-white/60 border-2 border-secondary-pink rounded-[3rem] p-6 md:p-8 backdrop-blur-md shadow-md space-y-5">
-            <h2 className="text-2xl font-heading text-primary-brown flex items-center gap-2 border-b border-primary-brown/5 pb-3">
-              <ImageIcon size={20} className="text-accent-red" />
+          <div className={`bg-white/60 border-2 rounded-[3rem] p-6 md:p-8 backdrop-blur-md shadow-md space-y-5 transition-colors ${fieldErrors.images ? "border-red-500" : "border-secondary-pink"}`}>
+            <h2 className={`text-2xl font-heading flex items-center gap-2 border-b pb-3 ${fieldErrors.images ? "text-red-500 border-red-500/20" : "text-primary-brown border-primary-brown/5"}`}>
+              <ImageIcon size={20} className={fieldErrors.images ? "text-red-500" : "text-accent-red"} />
               <span>Thư viện ảnh sản phẩm</span>
             </h2>
+            {fieldErrors.images && <p className="text-red-500 text-sm font-bold">{fieldErrors.images}</p>}
 
             {/* Visual list of currently added images */}
             {images.length > 0 ? (
@@ -428,63 +461,67 @@ export default function NewProductPage() {
                     <img
                       src={url}
                       alt={`Product Upload ${i}`}
-                      className="w-full h-full object-contain p-2"
+                      className="w-full h-full object-contain p-2 cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => setZoomedImage(url)}
                     />
                     {/* Delete overlay */}
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(i)}
-                      className="absolute inset-0 bg-accent-red/80 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-200 cursor-pointer"
+                      className="absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-accent-red hover:text-white text-primary-brown border border-primary-brown/10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 cursor-pointer z-10"
+                      title="Xóa ảnh này"
                     >
-                      <X size={20} />
+                      <X size={14} />
                     </button>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-8 border-2 border-dashed border-primary-brown/10 rounded-[2rem] text-primary-brown/50 text-xs">
-                Chưa có ảnh nào. Vui lòng thêm từ Preset bên dưới hoặc dán link ảnh.
+                Sản phẩm bắt buộc phải có ít nhất 1 ảnh. Hãy tải ảnh lên hoặc dán link ảnh.
               </div>
             )}
 
-            {/* Paste new image url */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Nhập/dán link ảnh mới (http...)"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 px-4 py-2.5 bg-white border border-primary-brown/10 rounded-full focus:border-accent-red outline-none text-xs"
-              />
-              <button
-                type="button"
-                onClick={() => handleAddImage(newImageUrl)}
-                className="px-4 py-2 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 cursor-pointer flex items-center gap-1 flex-shrink-0"
-              >
-                <Plus size={14} />
-                Thêm ảnh
-              </button>
-            </div>
+            {/* Paste new image url and Upload */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Nhập/dán link ảnh (http...)"
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  className="flex-1 px-4 py-2.5 bg-white border border-primary-brown/10 rounded-full focus:border-accent-red outline-none text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddImage(newImageUrl)}
+                  className="px-4 py-2 bg-white text-primary-brown font-bold border border-primary-brown/10 rounded-full text-xs shadow-sm hover:bg-zinc-50 cursor-pointer flex items-center gap-1 flex-shrink-0 transition-colors"
+                >
+                  <Plus size={14} />
+                  Thêm link
+                </button>
+              </div>
 
-            {/* Cute presets library */}
-            <div className="pt-2">
-              <span className="block text-[10px] font-bold uppercase tracking-widest text-primary-brown/40 mb-2">
-                Click để thử ngay với các ảnh preset cute mẫu:
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {presetImages.map((pUrl, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => handleAddImage(pUrl)}
-                    className="h-10 px-3 bg-white hover:bg-highlight-yellow/50 border border-primary-brown/10 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-xs font-bold text-primary-brown/80"
-                  >
-                    <span className="w-5 h-5 overflow-hidden rounded relative flex items-center justify-center border border-primary-brown/5 bg-secondary-pink/20">
-                      <img src={pUrl} className="object-contain w-full h-full p-0.5" />
-                    </span>
-                    Ảnh mẫu {i + 1}
-                  </button>
-                ))}
+              <div className="relative flex-shrink-0">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadImage}
+                  disabled={isUploadingImage}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                />
+                <button
+                  type="button"
+                  disabled={isUploadingImage}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 flex items-center justify-center gap-2 transition-colors h-full"
+                >
+                  {isUploadingImage ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Upload size={14} />
+                  )}
+                  {isUploadingImage ? "Đang tải..." : "Tải ảnh từ máy"}
+                </button>
               </div>
             </div>
           </div>
@@ -695,6 +732,53 @@ export default function NewProductPage() {
             </table>
           </div>
         </section>
+      )}
+
+      {/* Toast Error Notification */}
+      {formError && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-full text-sm font-bold shadow-[0_5px_15px_rgba(220,38,38,0.5)] animate-in slide-in-from-bottom-5 fade-in duration-300 flex items-center gap-3">
+          <X size={16} className="bg-white/20 rounded-full p-0.5" />
+          {formError}
+        </div>
+      )}
+
+      {/* Action Footer */}
+      <div className="pt-2 pb-8 flex justify-end">
+        <button
+          onClick={handleSaveProduct}
+          disabled={isPending}
+          className="px-8 py-4 bg-accent-red text-white font-bold rounded-full text-lg shadow-[0_6px_0_rgb(130,46,38)] hover:shadow-[0_3px_0_rgb(130,46,38)] hover:translate-y-[3px] active:shadow-none active:translate-y-[6px] transition-all flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {isPending ? (
+            <Loader2 size={24} className="animate-spin" />
+          ) : (
+            <>
+              <Save size={24} />
+              Lưu & Đăng bán ngay
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Image Zoom Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-zoom-out"
+          onClick={() => setZoomedImage(null)}
+        >
+          <button 
+            className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/30 text-white rounded-full transition-colors z-10 cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); setZoomedImage(null); }}
+          >
+            <X size={24} />
+          </button>
+          <img 
+            src={zoomedImage} 
+            alt="Zoomed" 
+            className="max-w-full max-h-[90vh] object-contain select-none shadow-2xl rounded-lg"
+            onClick={(e) => e.stopPropagation()} 
+          />
+        </div>
       )}
     </div>
   );

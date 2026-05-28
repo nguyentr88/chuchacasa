@@ -26,13 +26,13 @@ export default async function AdminLayout({
       <aside className="w-full md:w-72 bg-white/40 border-b md:border-b-0 md:border-r border-primary-brown/10 flex flex-col backdrop-blur-md">
         {/* Sidebar Header */}
         <div className="p-6 border-b border-primary-brown/10 flex items-center gap-4">
-          <div className="relative w-12 h-12 bg-secondary-pink rounded-full border-2 border-white flex items-center justify-center shadow-md overflow-hidden">
+          <div className="relative w-12 h-12 rounded-full border-2 border-white flex items-center justify-center shadow-md overflow-hidden bg-white">
             <Image
-              src="/globe.svg"
-              alt="Mascot"
-              width={32}
-              height={32}
-              className="opacity-80 object-contain"
+              src="/logo/logo-icon.png"
+              alt="Chu Cha Logo"
+              width={40}
+              height={40}
+              className="object-contain"
             />
           </div>
           <div>
@@ -68,13 +68,7 @@ export default async function AdminLayout({
             <Grid size={20} className="text-accent-red" />
             <span>Phân loại</span>
           </Link>
-          <Link
-            href="/admin/refund-policy"
-            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
-          >
-            <FileText size={20} className="text-accent-red" />
-            <span>Chính sách hoàn tiền</span>
-          </Link>
+
 
           <div className="pt-6 border-t border-primary-brown/10">
             <Link
@@ -122,13 +116,15 @@ export default async function AdminLayout({
         {/* Mobile Header (Hidden on Desktop) */}
         <header className="md:hidden px-6 py-4 bg-white/40 border-b border-primary-brown/10 flex justify-between items-center backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <Image
-              src="/globe.svg"
-              alt="Mascot"
-              width={24}
-              height={24}
-              className="opacity-80"
-            />
+            <div className="w-8 h-8 rounded-full bg-white overflow-hidden flex items-center justify-center shadow-sm">
+              <Image
+                src="/logo/logo-icon.png"
+                alt="Logo"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
+            </div>
             <span className="font-heading text-xl text-accent-red">Chu Cha Admin</span>
           </div>
         </header>
