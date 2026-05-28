@@ -17,8 +17,8 @@ export function ProductCard({ product }: { product: Product }) {
   const productPrice = product.price;
   const discountPrice = product.discountPrice;
   const hasDiscount = product.hasDiscount;
-  const displayImage = product.images[0] || "/globe.svg";
-  
+  const displayImage = product.images[0] || "/logo/chucha-avatar.jpg";
+
   const finalPrice = hasDiscount && discountPrice ? discountPrice : productPrice;
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -61,7 +61,7 @@ export function ProductCard({ product }: { product: Product }) {
           fill
           className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
         />
-        
+
         {/* Quick Add Overlay */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end p-6" onClick={(e) => e.stopPropagation()}>
           <div className="w-full bg-white rounded-2xl p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl" onClick={(e) => e.stopPropagation()}>
@@ -73,12 +73,11 @@ export function ProductCard({ product }: { product: Product }) {
                     <span className="text-[10px] font-bold text-primary-brown/50 uppercase block mb-1">Màu sắc</span>
                     <div className="flex flex-wrap gap-1">
                       {product.colors.map(c => (
-                        <button 
+                        <button
                           key={c}
                           onClick={() => setSelectedColor(c)}
-                          className={`text-xs px-2 py-1 rounded-md border transition-colors ${
-                            selectedColor === c ? "bg-accent-red text-white border-accent-red" : "bg-white text-primary-brown border-primary-brown/20 hover:border-accent-red/50"
-                          }`}
+                          className={`text-xs px-2 py-1 rounded-md border transition-colors ${selectedColor === c ? "bg-accent-red text-white border-accent-red" : "bg-white text-primary-brown border-primary-brown/20 hover:border-accent-red/50"
+                            }`}
                         >
                           {c}
                         </button>
@@ -91,12 +90,11 @@ export function ProductCard({ product }: { product: Product }) {
                     <span className="text-[10px] font-bold text-primary-brown/50 uppercase block mb-1">Kích thước</span>
                     <div className="flex flex-wrap gap-1">
                       {product.sizes.map(s => (
-                        <button 
+                        <button
                           key={s}
                           onClick={() => setSelectedSize(s)}
-                          className={`text-xs px-2 py-1 rounded-md border transition-colors ${
-                            selectedSize === s ? "bg-accent-red text-white border-accent-red" : "bg-white text-primary-brown border-primary-brown/20 hover:border-accent-red/50"
-                          }`}
+                          className={`text-xs px-2 py-1 rounded-md border transition-colors ${selectedSize === s ? "bg-accent-red text-white border-accent-red" : "bg-white text-primary-brown border-primary-brown/20 hover:border-accent-red/50"
+                            }`}
                         >
                           {s}
                         </button>
@@ -106,8 +104,8 @@ export function ProductCard({ product }: { product: Product }) {
                 )}
               </div>
             )}
-            
-            <button 
+
+            <button
               onClick={handleAddToCart}
               className="w-full py-2 bg-accent-red text-white font-bold text-sm rounded-xl hover:bg-accent-red/90 transition-colors flex items-center justify-center gap-2"
             >
@@ -123,7 +121,7 @@ export function ProductCard({ product }: { product: Product }) {
         <h3 className="font-heading text-lg mb-1.5 text-primary-brown group-hover:text-accent-red transition-colors line-clamp-2">
           {product.name}
         </h3>
-        
+
         <div className="mt-auto">
           {hasDiscount ? (
             <div className="flex items-baseline gap-2 flex-wrap">

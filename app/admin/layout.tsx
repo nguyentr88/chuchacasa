@@ -18,7 +18,7 @@ export default async function AdminLayout({
 
   const adminName = session.user?.name || "Chu Cha Admin";
   const adminEmail = session.user?.email || "admin@chucha.casa";
-  const adminAvatar = session.user?.image || "/globe.svg";
+  const adminAvatar = session.user?.image || "/logo/chucha-avatar.jpg";
 
   return (
     <div className="min-h-screen bg-background text-primary-brown flex flex-col md:flex-row font-body">
@@ -88,9 +88,9 @@ export default async function AdminLayout({
               <Image
                 src={adminAvatar}
                 alt="Avatar"
-                width={36}
-                height={36}
-                className="object-cover"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -98,7 +98,7 @@ export default async function AdminLayout({
               <p className="text-xs text-primary-brown/60 truncate">{adminEmail}</p>
             </div>
           </div>
-          
+
           <form action="/api/auth/signout" method="POST">
             <button
               type="submit"

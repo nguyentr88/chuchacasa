@@ -14,7 +14,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const isProductPage = pathname.startsWith("/products");
-  
+
   const { cartCount, setIsCartOpen } = useCart();
 
   // Các trạng thái của bộ Tìm kiếm Thông minh
@@ -91,47 +91,45 @@ export default function Header() {
   return (
     <>
       <header className="p-6 flex justify-between items-center max-w-7xl mx-auto w-full sticky top-0 bg-background/80 backdrop-blur-md z-50">
-        <Link 
-          href="/products" 
-          className={`text-3xl font-heading tracking-tight transition-all relative ${
-            isProductPage ? "text-accent-red" : "text-primary-brown hover:text-accent-red"
-          }`}
+        <Link
+          href="/products"
+          className={`text-3xl font-heading tracking-tight transition-all relative ${isProductPage ? "text-accent-red" : "text-primary-brown hover:text-accent-red"
+            }`}
         >
           Sản phẩm
           {isProductPage && (
             <div className="absolute -bottom-1 left-0 w-full h-1 bg-accent-red rounded-full" />
           )}
         </Link>
-        
+
         <nav className="flex items-center gap-10">
           <Link href="/" className="font-heading text-xl text-primary-brown hover:text-accent-red transition-colors">
             chucha.casa
           </Link>
-          
-          <Link 
-            href="/refund-policy" 
-            className={`font-heading text-xl transition-all hover:scale-105 duration-200 ${
-              pathname === "/refund-policy" 
-                ? "text-accent-red font-bold relative" 
+
+          <Link
+            href="/refund-policy"
+            className={`font-heading text-xl transition-all hover:scale-105 duration-200 ${pathname === "/refund-policy"
+                ? "text-accent-red font-bold relative"
                 : "text-primary-brown hover:text-accent-red"
-            }`}
+              }`}
           >
             Chính sách hoàn tiền
             {pathname === "/refund-policy" && (
               <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-accent-red rounded-full" />
             )}
           </Link>
-          
+
           <div className="flex items-center gap-6 text-primary-brown">
             {/* Click mở Modal tìm kiếm */}
-            <button 
+            <button
               onClick={() => setIsSearchOpen(true)}
               className="hover:text-accent-red transition-all cursor-pointer hover:scale-110 duration-200"
             >
               <Search size={24} strokeWidth={2.5} />
             </button>
             <UserMenu />
-            <button 
+            <button
               onClick={() => setIsCartOpen(true)}
               className="hover:text-accent-red transition-all cursor-pointer hover:scale-110 duration-200 relative"
             >
@@ -148,7 +146,7 @@ export default function Header() {
 
       {/* MODAL TÌM KIẾM THÔNG MINH AUTOCOMPLETE */}
       {isSearchOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-primary-brown/30 backdrop-blur-md z-[100] flex items-start justify-center pt-24 px-6 animate-in fade-in duration-300"
           onClick={(e) => {
             // Đóng modal khi click ra ngoài card
@@ -162,7 +160,7 @@ export default function Header() {
                 <span>Tìm kiếm sản phẩm</span>
                 <span className="text-xs opacity-60 font-body font-normal">(Esc để đóng)</span>
               </h3>
-              <button 
+              <button
                 onClick={() => setIsSearchOpen(false)}
                 className="hover:text-accent-red transition-colors text-primary-brown/50 hover:bg-secondary-pink/20 p-2 rounded-full cursor-pointer duration-200"
               >
@@ -186,7 +184,7 @@ export default function Header() {
                 }}
               />
               {searchKeyword.trim() && (
-                <button 
+                <button
                   onClick={() => setSearchKeyword("")}
                   className="absolute right-4 hover:text-accent-red transition-colors text-primary-brown/50 cursor-pointer p-1"
                 >
@@ -227,11 +225,11 @@ export default function Header() {
                   <p className="text-xs font-extrabold tracking-widest text-primary-brown/50 uppercase px-1">
                     ✨ Sản phẩm tìm thấy ({totalCount})
                   </p>
-                  
+
                   <div className="space-y-2">
                     {searchResults.map((prod) => {
-                      const displayImage = prod.images[0] || "/globe.svg";
-                      
+                      const displayImage = prod.images[0] || "/logo/chucha-avatar.jpg";
+
                       return (
                         <Link
                           key={prod.id}
@@ -255,13 +253,13 @@ export default function Header() {
                               {prod.name}
                             </h4>
                             <p className="text-xs font-bold text-accent-red mt-0.5">
-                              {prod.hasDiscount 
-                                ? `${prod.discountPrice?.toLocaleString("vi-VN")} VNĐ` 
+                              {prod.hasDiscount
+                                ? `${prod.discountPrice?.toLocaleString("vi-VN")} VNĐ`
                                 : `${prod.price.toLocaleString("vi-VN")} VNĐ`
                               }
                             </p>
                           </div>
-                          
+
                           <ChevronRight size={16} className="text-primary-brown/30 group-hover:text-accent-red group-hover:translate-x-0.5 transition-all" />
                         </Link>
                       );

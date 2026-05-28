@@ -35,7 +35,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<ProductWithRelations[]>([]);
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Lọc
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -59,7 +59,7 @@ export default function ProductsPage() {
         getAdminProductsAction(),
         getCategoriesAction()
       ]);
-      
+
       if (prodRes.products) setProducts(prodRes.products as any);
       if (catRes.categories) setCategories(catRes.categories);
     } catch (err) {
@@ -158,9 +158,9 @@ export default function ProductsPage() {
 
   // Lọc sản phẩm
   const filteredProducts = products.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+
     const matchesCategory = selectedCategory === "all" || p.categoryId === selectedCategory;
 
     return matchesSearch && matchesCategory;
@@ -252,12 +252,12 @@ export default function ProductsPage() {
                 {/* Product Thumbnail Banner */}
                 <div className="aspect-[4/3] relative bg-secondary-pink/20 overflow-hidden flex items-center justify-center border-b-2 border-primary-brown/5">
                   <Image
-                    src={product.images[0] || "/globe.svg"}
+                    src={product.images[0] || "/logo/chucha-avatar.jpg"}
                     alt={product.name}
                     fill
-                    className="object-contain p-6 group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  
+
                   {/* Category Pill (Top Left) */}
                   <span className="absolute top-4 left-4 px-3 py-1 bg-white border border-primary-brown/5 text-primary-brown rounded-full text-xs font-bold shadow-sm uppercase tracking-wider">
                     {product.category.name}
@@ -328,7 +328,7 @@ export default function ProductsPage() {
                       <DollarSign size={14} />
                       Sửa giá nhanh
                     </button>
-                    
+
                     {/* Edit info */}
                     <Link
                       href={`/admin/products/${product.id}/edit`}

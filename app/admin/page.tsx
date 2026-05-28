@@ -40,7 +40,7 @@ export default async function AdminDashboard() {
             Chào mừng Admin trở lại! 🧸
           </h1>
           <p className="text-lg md:text-xl text-primary-brown/80 leading-relaxed max-w-xl">
-            Nơi quản lý ngôi nhà nhỏ <span className="font-bold text-accent-red">chucha.casa</span>. 
+            Nơi quản lý ngôi nhà nhỏ <span className="font-bold text-accent-red">chucha.casa</span>.
             Cùng thêm sản phẩm mới và lan tỏa niềm hạnh phúc nhỏ xinh đến mọi nhà nhé!
           </p>
           <div className="pt-2 flex flex-wrap gap-4 justify-center md:justify-start">
@@ -61,13 +61,13 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        <div className="relative w-44 h-44 flex-shrink-0 bg-white rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+        <div className="relative w-44 h-44 flex-shrink-0 overflow-hidden bg-white rounded-full flex items-center justify-center border-4 border-white shadow-lg">
           <Image
-            src="/globe.svg"
+            src="/logo/chucha-avatar.jpg"
             alt="Mascot Welcome"
-            width={120}
-            height={120}
-            className="opacity-90 object-contain"
+            width={176}
+            height={176}
+            className="w-full h-full object-cover opacity-90"
           />
         </div>
       </section>
@@ -166,7 +166,7 @@ export default async function AdminDashboard() {
                     <div className="flex items-center gap-4 min-w-0">
                       <div className="w-14 h-14 bg-secondary-pink/20 rounded-2xl flex-shrink-0 overflow-hidden relative border border-primary-brown/10">
                         <Image
-                          src={product.images[0] || "/globe.svg"}
+                          src={product.images[0] || "/logo/chucha-avatar.jpg"}
                           alt={product.name}
                           fill
                           className="object-contain p-2"
@@ -176,7 +176,7 @@ export default async function AdminDashboard() {
                         <h4 className="font-bold text-base truncate mb-0.5">{product.name}</h4>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-primary-brown/60">
                           <span className="px-2 py-0.5 bg-white/70 border border-primary-brown/5 rounded-full font-bold">
-                            {product.category.name}
+                            {product?.category?.name}
                           </span>
                           {product.sku && <span>SKU: {product.sku}</span>}
                           <span>•</span>

@@ -69,7 +69,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
   // Preset cute placeholders for testing
   const presetImages = [
-    "/globe.svg",
+    "/logo/chucha-avatar.jpg",
     "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=300",
     "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=300",
     "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=300"
@@ -129,15 +129,15 @@ export default function EditProductForm({ product }: EditProductFormProps) {
         // Tạo SKU tiền tố tự động dựa trên SKU chung + màu + kích thước
         const cCode = c ? c.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 3) : "";
         const sCode = s ? s.trim().toUpperCase().substring(0, 3) : "";
-        
+
         let autoVariantSku = sku ? sku.trim().toUpperCase() : "PROD";
         if (cCode) autoVariantSku += `-${cCode}`;
         if (sCode) autoVariantSku += `-${sCode}`;
 
         // Kiểm tra xem tổ hợp này có khớp với một biến thể hiện tại (đang gõ hoặc từ DB) không
-        const existing = variants.find((v) => v.color === c && v.size === s) || 
-                         initialVariants.find((v) => v.color === c && v.size === s);
-        
+        const existing = variants.find((v) => v.color === c && v.size === s) ||
+          initialVariants.find((v) => v.color === c && v.size === s);
+
         newVariants.push({
           id: existing?.id,
           sku: existing ? existing.sku : autoVariantSku,
@@ -168,7 +168,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
     const updated = [...images];
     updated.splice(index, 1);
     setImages(updated);
-    
+
     // Reset ảnh của các biến thể nếu ảnh đó bị xóa
     const deletedImageUrl = images[index];
     setVariants(variants.map(v => v.image === deletedImageUrl ? { ...v, image: "" } : v));
@@ -220,7 +220,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
       setFormError("Vui lòng nhập tên sản phẩm!");
       return;
     }
-    
+
     const basePriceNum = parseInt(price);
     if (isNaN(basePriceNum) || basePriceNum <= 0) {
       setFormError("Vui lòng nhập giá gốc hợp lệ!");

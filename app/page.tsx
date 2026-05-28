@@ -7,13 +7,12 @@ export default function Home() {
         <div className="relative w-56 h-56 mb-10">
           <div className="absolute inset-0 bg-secondary-pink rounded-full -rotate-6 scale-110 opacity-50 blur-xl"></div>
           <div className="absolute inset-0 bg-highlight-yellow rounded-full rotate-3 opacity-30 blur-lg"></div>
-          <div className="relative z-10 w-full h-full bg-white rounded-full flex items-center justify-center shadow-inner border-4 border-white">
-             <Image
-              src="/globe.svg"
+          <div className="relative z-10 w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-inner border-4 border-white overflow-hidden">
+            <Image
+              src="/logo/chucha-avatar.jpg"
               alt="chucha.casa mascot"
-              width={160}
-              height={160}
-              className="opacity-80"
+              fill
+              className="object-cover opacity-80"
             />
           </div>
         </div>
@@ -21,16 +20,16 @@ export default function Home() {
         <h1 className="text-6xl md:text-8xl font-heading text-primary-brown mb-2">
           chucha.casa
         </h1>
-        
+
         <p className="text-2xl md:text-3xl font-subheading text-accent-red mb-10 italic">
           Mang hạnh phúc về nhà
         </p>
 
         <div className="max-w-2xl bg-white/40 p-8 rounded-[2rem] backdrop-blur-sm border-2 border-secondary-pink/30 shadow-sm mb-12">
           <p className="text-lg md:text-xl text-primary-brown/90 leading-relaxed">
-            Welcome to <span className="font-bold text-accent-red">chucha.casa</span>. 
-            Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh. 
-            Tại ngôi nhà nhỏ của Chu và Cha, mỗi sản phẩm như lót ly, pouch, ví, thúng vải,... 
+            Welcome to <span className="font-bold text-accent-red">chucha.casa</span>.
+            Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh.
+            Tại ngôi nhà nhỏ của Chu và Cha, mỗi sản phẩm như lót ly, pouch, ví, thúng vải,...
             đều mang một câu chuyện và niềm vui riêng.
           </p>
         </div>
@@ -50,13 +49,13 @@ export default function Home() {
             <h3 className="text-2xl font-heading mb-3 text-primary-brown">Đồ chơi gấu bông</h3>
             <p className="text-base opacity-70">Những người bạn mềm mại, sẵn sàng ôm ấp mọi lúc.</p>
           </div>
-          
+
           <div className="group p-10 bg-white/60 rounded-[3rem] border-2 border-highlight-yellow transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="text-5xl mb-6 group-hover:scale-125 transition-transform inline-block">🎁</div>
             <h3 className="text-2xl font-heading mb-3 text-primary-brown">Quà tặng độc đáo</h3>
             <p className="text-base opacity-70">Mỗi món quà là một câu chuyện riêng biệt.</p>
           </div>
-          
+
           <div className="group p-10 bg-white/60 rounded-[3rem] border-2 border-secondary-pink transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="text-5xl mb-6 group-hover:scale-125 transition-transform inline-block">✨</div>
             <h3 className="text-2xl font-heading mb-3 text-primary-brown">Phụ kiện cute</h3>

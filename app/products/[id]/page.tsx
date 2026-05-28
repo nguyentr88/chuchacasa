@@ -35,7 +35,7 @@ export default async function ProductDetail({ params }: PageProps) {
   const hasDiscount = product.hasDiscount;
   const originalPrice = product.price;
   const discountPrice = product.discountPrice;
-  const primaryImage = product.images[0] || "/globe.svg";
+  const primaryImage = product.images[0] || "/logo/chucha-avatar.jpg";
 
   return (
     <div className="min-h-screen bg-background text-primary-brown pb-20 relative overflow-hidden">
@@ -45,8 +45,8 @@ export default async function ProductDetail({ params }: PageProps) {
 
       <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         {/* Nút quay lại */}
-        <Link 
-          href="/products" 
+        <Link
+          href="/products"
           className="inline-flex items-center gap-2 font-bold text-sm text-primary-brown/65 hover:text-accent-red transition-all hover:-translate-x-0.5 duration-300 mb-8"
         >
           <ChevronLeft size={16} className="text-accent-red" />
@@ -76,11 +76,10 @@ export default async function ProductDetail({ params }: PageProps) {
             {product.images.length > 1 && (
               <div className="flex gap-3 justify-center">
                 {product.images.map((img, index) => (
-                  <div 
+                  <div
                     key={index}
-                    className={`w-16 h-16 relative bg-white rounded-2xl border-2 overflow-hidden cursor-pointer shadow-sm hover:scale-105 transition-transform ${
-                      index === 0 ? "border-accent-red" : "border-primary-brown/10"
-                    }`}
+                    className={`w-16 h-16 relative bg-white rounded-2xl border-2 overflow-hidden cursor-pointer shadow-sm hover:scale-105 transition-transform ${index === 0 ? "border-accent-red" : "border-primary-brown/10"
+                      }`}
                   >
                     <Image
                       src={img}
@@ -100,7 +99,7 @@ export default async function ProductDetail({ params }: PageProps) {
               {/* Phân loại và Tên */}
               <div className="flex items-center gap-2 mb-3">
                 <span className="px-3.5 py-1.5 bg-secondary-pink/30 text-accent-red text-[10px] font-extrabold tracking-widest rounded-full uppercase border border-secondary-pink/20">
-                  {product.category.name}
+                  {product?.category?.name}
                 </span>
                 {product.sku && (
                   <span className="text-xs font-bold text-primary-brown/40 font-mono">
@@ -134,7 +133,7 @@ export default async function ProductDetail({ params }: PageProps) {
                   </p>
                 )}
               </div>
-              
+
               <div className="space-y-6 text-base">
                 {/* 3. Mô tả chi tiết */}
                 {product.description && (
@@ -150,7 +149,7 @@ export default async function ProductDetail({ params }: PageProps) {
               {/* Nút hành động và biến thể từ Client Component */}
               <AddToCartForm product={product} />
             </div>
-            
+
             {/* Ghi chú thương hiệu */}
             <div className="mt-8 p-6 bg-highlight-yellow/30 rounded-[2rem] border-2 border-highlight-yellow/50 shadow-sm">
               <h4 className="font-heading text-base mb-2 italic flex items-center gap-1.5 text-primary-brown">
