@@ -3,6 +3,7 @@ import { ChevronLeft, ShoppingBag, CreditCard, Sparkles, Tag, ShieldCheck } from
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { AddToCartForm } from "@/components/AddToCartForm";
 
 // Tắt hoàn toàn cache tĩnh để trang chi tiết luôn cập nhật dữ liệu mới nhất
 export const revalidate = 0;
@@ -135,46 +136,6 @@ export default async function ProductDetail({ params }: PageProps) {
               </div>
               
               <div className="space-y-6 text-base">
-                {/* 1. Lựa chọn màu sắc */}
-                {product.colors.length > 0 && (
-                  <div>
-                    <h4 className="font-heading text-lg mb-2 opacity-80 flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-accent-red" />
-                      Màu sắc có sẵn
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {product.colors.map(color => (
-                        <span 
-                          key={color}
-                          className="bg-white/60 text-primary-brown px-4 py-2 border-2 border-primary-brown/10 rounded-xl font-bold text-xs"
-                        >
-                          {color}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. Lựa chọn kích thước */}
-                {product.sizes.length > 0 && (
-                  <div>
-                    <h4 className="font-heading text-lg mb-2 opacity-80 flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-accent-red" />
-                      Kích thước sản phẩm
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {product.sizes.map(size => (
-                        <span 
-                          key={size}
-                          className="bg-secondary-pink/20 text-accent-red px-4 py-2 border border-secondary-pink/30 rounded-xl font-bold text-xs"
-                        >
-                          {size}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* 3. Mô tả chi tiết */}
                 {product.description && (
                   <div>
@@ -185,18 +146,9 @@ export default async function ProductDetail({ params }: PageProps) {
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Nút hành động */}
-            <div className="mt-auto flex flex-col sm:flex-row gap-4">
-              <button className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-white border-4 border-accent-red text-accent-red hover:bg-accent-red hover:text-white font-bold rounded-full text-base hover:shadow-lg transition-all active:scale-95 cursor-pointer duration-300">
-                <ShoppingBag size={20} />
-                Thêm vào giỏ hàng
-              </button>
-              <button className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-accent-red text-white font-bold rounded-full text-base hover:shadow-xl hover:scale-105 transition-all shadow-md active:scale-95 cursor-pointer duration-300">
-                <CreditCard size={20} />
-                Mua ngay lập tức
-              </button>
+              {/* Nút hành động và biến thể từ Client Component */}
+              <AddToCartForm product={product} />
             </div>
             
             {/* Ghi chú thương hiệu */}

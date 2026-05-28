@@ -10,6 +10,7 @@ import {
   getProductFiltersAction 
 } from "@/app/actions/products";
 import { Product, Category } from "@/types/product";
+import { ProductCard } from "@/components/ProductCard";
 
 /**
  * Thẻ khung xương (Skeleton Card) khi đang tải dữ liệu sản phẩm
@@ -374,61 +375,9 @@ export default function ProductsPage() {
             // Trạng thái có sản phẩm
             <div className="space-y-12">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in duration-500">
-                {products.map((product) => {
-                  const productPrice = product.price;
-                  const discountPrice = product.discountPrice;
-                  const hasDiscount = product.hasDiscount;
-                  const displayImage = product.images[0] || "/globe.svg";
-
-                  return (
-                    <Link
-                      key={product.id}
-                      href={`/products/${product.id}`}
-                      className="group flex flex-col bg-white/40 border-2 border-primary-brown/5 rounded-[2.5rem] overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 relative"
-                    >
-                      {/* SALE tag */}
-                      {hasDiscount && (
-                        <div className="absolute top-4 left-4 z-10 bg-accent-red text-white text-[9px] font-extrabold px-3 py-1.5 rounded-full shadow-md tracking-wider uppercase animate-pulse">
-                          SALE ✨
-                        </div>
-                      )}
-
-                      {/* Ảnh sản phẩm */}
-                      <div className="aspect-[4/5] relative bg-secondary-pink/20 overflow-hidden flex items-center justify-center">
-                        <Image
-                          src={displayImage}
-                          alt={product.name}
-                          fill
-                          className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-
-                      {/* Thông tin sản phẩm */}
-                      <div className="p-6 border-t-2 border-primary-brown/5 flex flex-col flex-1">
-                        <h3 className="font-heading text-lg mb-1.5 text-primary-brown group-hover:text-accent-red transition-colors">
-                          {product.name}
-                        </h3>
-                        
-                        <div className="mt-auto">
-                          {hasDiscount ? (
-                            <div className="flex items-baseline gap-2 flex-wrap">
-                              <span className="font-bold text-accent-red text-base">
-                                {discountPrice?.toLocaleString("vi-VN")} VNĐ
-                              </span>
-                              <span className="text-xs line-through opacity-50 font-medium">
-                                {productPrice.toLocaleString("vi-VN")} VNĐ
-                              </span>
-                            </div>
-                          ) : (
-                            <p className="font-bold text-accent-red text-base">
-                              {productPrice.toLocaleString("vi-VN")} VNĐ
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
               </div>
 
               {/* Nút Xem thêm (Lazy load pagination) */}

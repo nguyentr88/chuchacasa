@@ -21,6 +21,8 @@ export const metadata: Metadata = {
 
 import Header from "@/components/Header";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { CartProvider } from "@/components/providers/CartContext";
+import { CartDrawer } from "@/components/CartDrawer";
 
 export default function RootLayout({
   children,
@@ -34,8 +36,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-body text-primary-brown bg-background">
         <SessionProvider>
-          <Header />
-          {children}
+          <CartProvider>
+            <Header />
+            {children}
+            <CartDrawer />
+          </CartProvider>
         </SessionProvider>
       </body>
     </html>

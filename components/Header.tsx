@@ -8,11 +8,14 @@ import { useState, useEffect, useRef } from "react";
 import UserMenu from "./UserMenu";
 import { getProductsAction } from "@/app/actions/products";
 import { Product } from "@/types/product";
+import { useCart } from "./providers/CartContext";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const isProductPage = pathname.startsWith("/products");
+  
+  const { cartCount, setIsCartOpen } = useCart();
 
   // Các trạng thái của bộ Tìm kiếm Thông minh
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -128,8 +131,16 @@ export default function Header() {
               <Search size={24} strokeWidth={2.5} />
             </button>
             <UserMenu />
-            <button className="hover:text-accent-red transition-all cursor-pointer hover:scale-110 duration-200">
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="hover:text-accent-red transition-all cursor-pointer hover:scale-110 duration-200 relative"
+            >
               <ShoppingCart size={24} strokeWidth={2.5} />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-accent-red text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-background">
+                  {cartCount}
+                </span>
+              )}
             </button>
           </div>
         </nav>

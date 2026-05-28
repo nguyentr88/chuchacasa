@@ -100,3 +100,72 @@ model Setting {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  TRANSFER_PARTIAL // Cọc 50k
+  TRANSFER_FULL    // Chuyển toàn bộ
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique // Mã đơn hàng (e.g. #ORD1234)
+  
+  // Customer Info
+  customerName    String
+  customerEmail   String?
+  customerPhone   String
+  
+  // Shipping
+  shippingAddress String
+  shippingCity    String?
+  shippingDistrict String?
+  shippingWard    String?
+  shippingNotes   String?       @db.Text
+
+  // Payment
+  paymentMethod   PaymentMethod
+  paymentProof    String?       // Link tới ảnh hóa đơn chuyển khoản
+  
+  // Order totals
+  subtotal        Int
+  shippingFee     Int           @default(0)
+  discount        Int           @default(0)
+  totalAmount     Int
+  
+  status          OrderStatus   @default(PENDING)
+  
+  items           OrderItem[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model OrderItem {
+  id              String        @id @default(cuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Snapshot of product data at purchase time
+  productId       String
+  productName     String
+  variantId       String?
+  sku             String?
+  color           String?
+  size            String?
+  image           String?
+  
+  price           Int
+  quantity        Int
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
