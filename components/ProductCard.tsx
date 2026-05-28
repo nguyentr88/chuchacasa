@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Product } from "@/types/product";
 import { useCart } from "./providers/CartContext";
 import { useState } from "react";
@@ -44,97 +43,99 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div
       onClick={handleCardClick}
-      className="group flex flex-col bg-white/40 border-2 border-primary-brown/5 rounded-[2.5rem] overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 relative cursor-pointer"
+      className="group flex flex-col bg-white border-2 border-primary-brown/5 rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 relative cursor-pointer"
     >
       {/* SALE tag */}
       {hasDiscount && (
-        <div className="absolute top-4 left-4 z-10 bg-accent-red text-white text-[9px] font-extrabold px-3 py-1.5 rounded-full shadow-md tracking-wider uppercase animate-pulse">
+        <div className="absolute top-4 left-4 z-20 bg-accent-red text-white text-[9px] font-extrabold px-3 py-1.5 rounded-full shadow-md tracking-wider uppercase animate-pulse">
           SALE ✨
         </div>
       )}
 
-      {/* Ảnh sản phẩm */}
-      <div className="aspect-[4/5] relative bg-secondary-pink/20 overflow-hidden flex items-center justify-center">
+      {/* Khu vực ảnh */}
+      <div className="aspect-[4/5] relative bg-secondary-pink/15 overflow-hidden">
         <Image
           src={displayImage}
           alt={product.name}
           fill
-          className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
         />
 
-        {/* Quick Add Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end p-6" onClick={(e) => e.stopPropagation()}>
-          <div className="w-full bg-white rounded-2xl p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            {/* Thuộc tính */}
-            {(product.colors.length > 0 || product.sizes.length > 0) && (
-              <div className="space-y-3 mb-4">
-                {product.colors.length > 0 && (
-                  <div>
-                    <span className="text-[10px] font-bold text-primary-brown/50 uppercase block mb-1">Màu sắc</span>
-                    <div className="flex flex-wrap gap-1">
-                      {product.colors.map(c => (
-                        <button
-                          key={c}
-                          onClick={() => setSelectedColor(c)}
-                          className={`text-xs px-2 py-1 rounded-md border transition-colors ${selectedColor === c ? "bg-accent-red text-white border-accent-red" : "bg-white text-primary-brown border-primary-brown/20 hover:border-accent-red/50"
-                            }`}
-                        >
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {product.sizes.length > 0 && (
-                  <div>
-                    <span className="text-[10px] font-bold text-primary-brown/50 uppercase block mb-1">Kích thước</span>
-                    <div className="flex flex-wrap gap-1">
-                      {product.sizes.map(s => (
-                        <button
-                          key={s}
-                          onClick={() => setSelectedSize(s)}
-                          className={`text-xs px-2 py-1 rounded-md border transition-colors ${selectedSize === s ? "bg-accent-red text-white border-accent-red" : "bg-white text-primary-brown border-primary-brown/20 hover:border-accent-red/50"
-                            }`}
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+        {/* ===== HOVER OVERLAY ===== */}
+        <div
+          className="absolute inset-0 z-10 flex flex-col justify-between pointer-events-none group-hover:pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* --- Chips màu sắc / kích thước bay xuống từ trên --- */}
+          <div className="p-3 flex flex-wrap gap-1.5 opacity-0 -translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 ease-out delay-75">
+            {product.colors.length > 0 && product.colors.map(c => (
+              <button
+                key={c}
+                onClick={(e) => { e.stopPropagation(); setSelectedColor(c); }}
+                className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-md transition-all duration-200 border
+                  ${selectedColor === c
+                    ? "bg-accent-red text-white border-accent-red shadow-accent-red/30"
+                    : "bg-white/90 text-primary-brown border-white/60 hover:bg-white hover:border-accent-red/40 hover:scale-105"
+                  }`}
+              >
+                {c}
+              </button>
+            ))}
+            {product.sizes.length > 0 && product.sizes.map(s => (
+              <button
+                key={s}
+                onClick={(e) => { e.stopPropagation(); setSelectedSize(s); }}
+                className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-md transition-all duration-200 border
+                  ${selectedSize === s
+                    ? "bg-accent-red text-white border-accent-red shadow-accent-red/30"
+                    : "bg-white/90 text-primary-brown border-white/60 hover:bg-white hover:border-accent-red/40 hover:scale-105"
+                  }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
 
+          {/* --- Tooltip tên sản phẩm (giữa ảnh, phía dưới) --- */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-400 delay-100">
+            <span className="bg-primary-brown/75 text-white text-xs font-bold px-4 py-1.5 rounded-full backdrop-blur-sm whitespace-nowrap shadow-lg">
+              {product.name}
+            </span>
+          </div>
+
+          <div className="p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-out delay-100">
             <button
               onClick={handleAddToCart}
-              className="w-full py-2 bg-accent-red text-white font-bold text-sm rounded-xl hover:bg-accent-red/90 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-primary-brown/5 backdrop-blur-md text-primary-brown font-extrabold text-sm rounded-2xl shadow-xl
+                hover:bg-secondary-pink hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]
+                transition-all duration-200 flex items-center justify-center gap-2.5 border-2 border-white/50"
             >
-              <ShoppingCart size={16} />
-              Thêm nhanh
+              <span className="tracking-wide">Thêm vô giỏ hàng</span>
+              <ShoppingBag size={18} strokeWidth={2.5} />
             </button>
           </div>
         </div>
       </div>
 
       {/* Thông tin sản phẩm */}
-      <div className="p-6 border-t-2 border-primary-brown/5 flex flex-col flex-1">
-        <h3 className="font-heading text-lg mb-1.5 text-primary-brown group-hover:text-accent-red transition-colors line-clamp-2">
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="font-heading text-base mb-1 text-primary-brown group-hover:text-accent-red transition-colors duration-300 line-clamp-2 leading-snug">
           {product.name}
         </h3>
 
-        <div className="mt-auto">
+        <div className="mt-auto pt-1">
           {hasDiscount ? (
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="font-bold text-accent-red text-base">
-                {discountPrice?.toLocaleString("vi-VN")} VNĐ
+              <span className="font-extrabold text-accent-red text-base">
+                {discountPrice?.toLocaleString("vi-VN")}VNĐ
               </span>
-              <span className="text-xs line-through opacity-50 font-medium">
-                {productPrice.toLocaleString("vi-VN")} VNĐ
+              <span className="text-xs line-through opacity-40 font-semibold">
+                {productPrice.toLocaleString("vi-VN")}đ
               </span>
             </div>
           ) : (
-            <p className="font-bold text-accent-red text-base">
-              {productPrice.toLocaleString("vi-VN")} VNĐ
+            <p className="font-extrabold text-primary-brown text-base">
+              {productPrice.toLocaleString("vi-VN")}VNĐ
             </p>
           )}
         </div>
