@@ -147,7 +147,7 @@ export default async function ProductDetail({ params }: PageProps) {
               </div>
 
               {/* Nút hành động và biến thể từ Client Component */}
-              <AddToCartForm product={product} />
+              <AddToCartForm product={product as any} />
             </div>
 
             {/* Ghi chú thương hiệu */}
