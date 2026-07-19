@@ -19,7 +19,6 @@ export default function Error({
 
   return (
     <div className="min-h-screen bg-background text-primary-brown flex flex-col font-body">
-      <Header />
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <div className="bg-white/60 border-2 border-secondary-pink rounded-[3rem] p-10 md:p-16 max-w-lg w-full backdrop-blur-md shadow-md animate-in zoom-in-95 duration-500">
           <div className="w-24 h-24 bg-accent-red/10 text-accent-red rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
