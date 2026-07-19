@@ -4,7 +4,7 @@ import { useCart } from "@/components/providers/CartContext";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Loader2, CheckCircle2, UserCircle2 } from "lucide-react";
+import { ChevronLeft, Loader2, CheckCircle2, UserCircle2, Upload, X } from "lucide-react";
 import { createOrderAction } from "@/app/actions/checkout";
 import { useRouter } from "next/navigation";
 
@@ -28,6 +28,8 @@ export default function CheckoutPage() {
   });
 
   const [paymentMethod, setPaymentMethod] = useState<"COD" | "TRANSFER_PARTIAL" | "TRANSFER_FULL">("TRANSFER_PARTIAL");
+  const [paymentProof, setPaymentProof] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const shippingFee = items.length > 0 ? 30000 : 0; // Tạm tính 30k ship
   const totalAmount = cartTotal + shippingFee;
@@ -46,6 +48,14 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (
+      (paymentMethod === "TRANSFER_PARTIAL" || paymentMethod === "TRANSFER_FULL") 
+      && !paymentProof
+    ) {
+      setError("Vui lòng tải lên ảnh chụp màn hình hóa đơn chuyển khoản.");
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
 
@@ -59,6 +69,7 @@ export default function CheckoutPage() {
       shippingWard: formData.ward,
       shippingNotes: formData.notes,
       paymentMethod: paymentMethod as any,
+      paymentProof,
       items: items.map(item => ({
         productId: item.productId,
         name: item.name,
@@ -202,6 +213,74 @@ export default function CheckoutPage() {
                         Nội dung chuyển khoản: <br/> 
                         <strong className="text-accent-red text-sm mt-1 block">[Tên của bạn] - [SĐT]</strong>
                       </p>
+                    </div>
+
+                    {/* Image Upload Area */}
+                    <div className="mt-6 border-t border-primary-brown/10 pt-6">
+                      <p className="text-sm font-bold text-center mb-3">Tải lên ảnh chụp màn hình chuyển khoản <span className="text-accent-red">*</span></p>
+                      
+                      {paymentProof ? (
+                        <div className="relative w-40 h-56 mx-auto rounded-xl border-2 border-primary-brown/20 overflow-hidden group">
+                          <Image src={paymentProof} alt="Bill" fill className="object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setPaymentProof("")}
+                            className="absolute top-2 right-2 bg-white/90 text-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="relative group rounded-xl border-2 border-dashed border-primary-brown/30 bg-white hover:bg-zinc-50 hover:border-accent-red/50 transition-all p-6 flex flex-col items-center justify-center gap-2 text-center cursor-pointer max-w-sm mx-auto">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+
+                              if (file.size > 5 * 1024 * 1024) {
+                                setError("Kích thước ảnh không được vượt quá 5MB");
+                                return;
+                              }
+
+                              try {
+                                setIsUploading(true);
+                                setError("");
+                                
+                                const formData = new FormData();
+                                formData.append("file", file);
+
+                                const res = await fetch("/api/upload", {
+                                  method: "POST",
+                                  body: formData,
+                                });
+
+                                const data = await res.json();
+                                if (!res.ok) {
+                                  throw new Error(data.error || "Lỗi upload ảnh");
+                                }
+
+                                setPaymentProof(data.url);
+                              } catch (err: any) {
+                                setError(err.message || "Lỗi khi upload ảnh");
+                              } finally {
+                                setIsUploading(false);
+                                if (e.target) e.target.value = '';
+                              }
+                            }}
+                            disabled={isUploading}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                          />
+                          <div className="w-10 h-10 rounded-full bg-accent-red/10 text-accent-red flex items-center justify-center group-hover:scale-110 transition-transform">
+                            {isUploading ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
+                          </div>
+                          <p className="font-bold text-primary-brown text-sm">
+                            {isUploading ? "Đang tải ảnh..." : "Bấm để tải ảnh lên"}
+                          </p>
+                          <p className="text-xs text-primary-brown/50">Tối đa 5MB</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
