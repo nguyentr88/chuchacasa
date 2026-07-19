@@ -69,7 +69,7 @@ export default function UserMenu() {
           )}
           
           <Link 
-            href="/profile" 
+            href="/settings" 
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary-brown hover:bg-secondary-pink/30 rounded-2xl transition-colors"
             onClick={() => setIsOpen(false)}
           >
