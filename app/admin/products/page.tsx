@@ -17,11 +17,11 @@ interface ProductWithRelations {
   images: string[];
   sizes: string[];
   colors: string[];
-  categoryId: string;
+  categoryId: string | null;
   category: {
     name: string;
     code: string;
-  };
+  } | null;
   variants: Array<{
     id: string;
     size: string | null;
@@ -260,7 +260,7 @@ export default function ProductsPage() {
 
                   {/* Category Pill (Top Left) */}
                   <span className="absolute top-4 left-4 px-3 py-1 bg-white border border-primary-brown/5 text-primary-brown rounded-full text-xs font-bold shadow-sm uppercase tracking-wider">
-                    {product.category.name}
+                    {product.category?.name || "Chưa phân loại"}
                   </span>
 
                   {/* SKU prefix (Top Right) */}
