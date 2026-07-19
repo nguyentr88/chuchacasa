@@ -15,8 +15,35 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "chucha.casa | Mang hạnh phúc về nhà",
-  description: "Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh như lót ly, pouch, ví, thúng vải...",
+  title: {
+    template: "%s | chucha.casa",
+    default: "chucha.casa | Mang hạnh phúc về nhà",
+  },
+  description: "Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh như lót ly, pouch, ví, thúng vải được làm thủ công bằng tình yêu thương.",
+  keywords: ["quà tặng thủ công", "đồ handmade", "lót ly vải", "ví vải", "thúng vải", "chucha casa", "quà tặng độc đáo"],
+  authors: [{ name: "Chu Cha Casa" }],
+  openGraph: {
+    title: "chucha.casa | Mang hạnh phúc về nhà",
+    description: "Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh như lót ly, pouch, ví, thúng vải...",
+    url: "https://chucha-casa.vercel.app", // Thay bằng URL chính thức sau này
+    siteName: "Chu Cha Casa",
+    images: [
+      {
+        url: "/logo/logo-main.png",
+        width: 1200,
+        height: 630,
+        alt: "Chu Cha Casa Logo",
+      },
+    ],
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "chucha.casa | Mang hạnh phúc về nhà",
+    description: "Nơi bạn “mang hạnh phúc về nhà” bằng những món quà nhỏ xinh như lót ly, pouch, ví, thúng vải...",
+    images: ["/logo/logo-main.png"],
+  },
 };
 
 import Header from "@/components/Header";
