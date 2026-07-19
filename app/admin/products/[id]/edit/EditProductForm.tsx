@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package } from "lucide-react";
+import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package, Upload } from "lucide-react";
 import { getCategoriesAction, updateProductAction } from "@/app/actions/admin";
 
 interface Category {
@@ -66,6 +66,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
   // Images List
   const [images, setImages] = useState<string[]>(product.images);
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Preset cute placeholders for testing
   const presetImages = [
@@ -161,6 +162,40 @@ export default function EditProductForm({ product }: EditProductFormProps) {
       setImages([...images, cleanUrl]);
     }
     setNewImageUrl("");
+  };
+
+  // Upload ảnh từ máy tính
+  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("Kích thước ảnh không được vượt quá 5MB");
+      return;
+    }
+
+    try {
+      setIsUploadingImage(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Lỗi upload ảnh");
+      }
+
+      setImages((prev) => [...prev, data.url]);
+    } catch (err: any) {
+      setFormError(err.message);
+    } finally {
+      setIsUploadingImage(false);
+      if (e.target) e.target.value = '';
+    }
   };
 
   // Xóa ảnh
@@ -484,23 +519,56 @@ export default function EditProductForm({ product }: EditProductFormProps) {
               </div>
             )}
 
-            {/* Paste new image url */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Nhập/dán link ảnh mới (http...)"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 px-4 py-2.5 bg-white border border-primary-brown/10 rounded-full focus:border-accent-red outline-none text-xs"
-              />
-              <button
-                type="button"
-                onClick={() => handleAddImage(newImageUrl)}
-                className="px-4 py-2 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 cursor-pointer flex items-center gap-1 flex-shrink-0"
-              >
-                <Plus size={14} />
-                Thêm ảnh
-              </button>
+            {/* Image upload and paste link */}
+            <div className="flex flex-col gap-5">
+              {/* Drag and Drop / Upload Button Area */}
+              <div className="relative group rounded-[2rem] border-2 border-dashed border-primary-brown/20 bg-white/50 hover:bg-white/80 hover:border-accent-red/50 transition-all p-8 flex flex-col items-center justify-center gap-3 text-center cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadImage}
+                  disabled={isUploadingImage}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                />
+                <div className="w-14 h-14 rounded-full bg-accent-red/10 text-accent-red flex items-center justify-center group-hover:scale-110 transition-transform">
+                  {isUploadingImage ? (
+                    <Loader2 size={28} className="animate-spin" />
+                  ) : (
+                    <Upload size={28} />
+                  )}
+                </div>
+                <div>
+                  <p className="font-bold text-primary-brown text-sm md:text-base">
+                    {isUploadingImage ? "Đang xử lý tải ảnh..." : "Nhấn hoặc kéo thả để tải ảnh từ máy"}
+                  </p>
+                  <p className="text-xs text-primary-brown/50 mt-1.5">Chấp nhận JPG, PNG, WebP (Tối đa 5MB)</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 px-4">
+                <div className="flex-1 h-px bg-primary-brown/10"></div>
+                <span className="text-xs font-bold text-primary-brown/40 uppercase tracking-widest">Hoặc</span>
+                <div className="flex-1 h-px bg-primary-brown/10"></div>
+              </div>
+
+              {/* Paste URL */}
+              <div className="flex gap-2 relative z-20">
+                <input
+                  type="text"
+                  placeholder="Dán link ảnh có sẵn (https://...)"
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  className="flex-1 px-5 py-3.5 bg-white border-2 border-primary-brown/10 rounded-full focus:border-accent-red outline-none text-sm transition-colors font-medium"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddImage(newImageUrl)}
+                  className="px-6 py-3.5 bg-white text-primary-brown font-bold border-2 border-primary-brown/10 rounded-full text-sm shadow-sm hover:bg-highlight-yellow hover:border-highlight-yellow hover:text-primary-brown cursor-pointer flex items-center gap-2 flex-shrink-0 transition-all"
+                >
+                  <Plus size={16} />
+                  Thêm từ link
+                </button>
+              </div>
             </div>
 
             {/* Cute presets library */}
