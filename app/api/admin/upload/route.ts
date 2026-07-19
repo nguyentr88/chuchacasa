@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,16 +40,31 @@ export async function POST(req: NextRequest) {
       .substring(0, 40);
     const filename = `${Date.now()}-${safeName}${ext}`;
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
+    const supabaseAdmin = getSupabaseAdmin();
 
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
+    // Upload lên Supabase Storage (bucket 'uploads') với quyền Admin
+    const { data, error: uploadError } = await supabaseAdmin.storage
+      .from("uploads") // Tên bucket trên Supabase
+      .upload(filename, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
 
-    const url = `/uploads/${filename}`;
+    if (uploadError) {
+      console.error("Supabase Upload Error:", uploadError);
+      return NextResponse.json({ error: "Lỗi upload lên Supabase. Vui lòng đảm bảo bạn đã tạo bucket 'uploads' (Public) trên Supabase." }, { status: 500 });
+    }
+
+    // Lấy public URL
+    const { data: publicUrlData } = supabaseAdmin.storage
+      .from("uploads")
+      .getPublicUrl(filename);
+
+    const url = publicUrlData.publicUrl;
+
     return NextResponse.json({ url });
   } catch (error: any) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Lỗi khi upload ảnh" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Lỗi khi upload ảnh" }, { status: 500 });
   }
 }

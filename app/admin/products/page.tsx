@@ -179,10 +179,10 @@ export default function ProductsPage() {
 
         <Link
           href="/admin/products/new"
-          className="px-6 py-3.5 bg-accent-red text-white font-bold rounded-full text-base shadow-[0_5px_0_rgb(130,46,38)] hover:shadow-[0_2px_0_rgb(130,46,38)] hover:translate-y-[3px] active:shadow-none active:translate-y-[5px] transition-all flex items-center gap-2 cursor-pointer shadow-md self-stretch sm:self-auto justify-center"
+          className="px-6 py-3.5 bg-accent-red text-white font-bold rounded-full text-base shadow-[0_5px_0_rgb(130,46,38)] hover:shadow-[0_2px_0_rgb(130,46,38)] hover:translate-y-[3px] active:shadow-none active:translate-y-[5px] transition-all flex items-center gap-2 cursor-pointer shadow-md self-stretch sm:self-auto justify-center whitespace-nowrap flex-shrink-0"
         >
           <Plus size={20} />
-          Đăng sản phẩm mới
+          Thêm sản phẩm
         </Link>
       </div>
 

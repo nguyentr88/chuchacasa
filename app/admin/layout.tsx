@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, ShoppingBag, Grid, Home, LogOut, FileText } from "lucide-react";
 import Image from "next/image";
+import AdminNav from "./AdminNav";
 
 export default async function AdminLayout({
   children,
@@ -45,48 +46,8 @@ export default async function AdminLayout({
           </div>
         </div>
 
-        {/* Navigation Menu */}
-        <nav className="flex-1 p-6 space-y-3">
-          <Link
-            href="/admin"
-            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
-          >
-            <LayoutDashboard size={20} className="text-accent-red" />
-            <span>Tổng quan</span>
-          </Link>
-          <Link
-            href="/admin/products"
-            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
-          >
-            <ShoppingBag size={20} className="text-accent-red" />
-            <span>Sản phẩm</span>
-          </Link>
-          <Link
-            href="/admin/categories"
-            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
-          >
-            <Grid size={20} className="text-accent-red" />
-            <span>Phân loại</span>
-          </Link>
-          <Link
-            href="/admin/orders"
-            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
-          >
-            <FileText size={20} className="text-accent-red" />
-            <span>Đơn hàng</span>
-          </Link>
-
-
-          <div className="pt-6 border-t border-primary-brown/10">
-            <Link
-              href="/"
-              className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow/60 hover:translate-x-1 duration-200"
-            >
-              <Home size={20} className="opacity-70" />
-              <span>Về Trang chủ shop</span>
-            </Link>
-          </div>
-        </nav>
+        {/* Navigation Menu (Client Component) */}
+        <AdminNav />
 
         {/* Sidebar Footer - Admin Profile */}
         <div className="p-6 border-t border-primary-brown/10 bg-white/20">
