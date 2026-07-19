@@ -5,6 +5,9 @@ import { LayoutDashboard, ShoppingBag, Grid, Home, LogOut, FileText } from "luci
 import Image from "next/image";
 import AdminNav from "./AdminNav";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminLayout({
   children,
 }: {
