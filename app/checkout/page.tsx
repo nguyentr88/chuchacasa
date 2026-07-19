@@ -2,6 +2,8 @@
 
 import { useCart } from "@/components/providers/CartContext";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { compressImage } from "@/lib/image-utils";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, Loader2, CheckCircle2, UserCircle2, Upload, X } from "lucide-react";
@@ -248,8 +250,11 @@ export default function CheckoutPage() {
                                 setIsUploading(true);
                                 setError("");
                                 
+                                // Nén ảnh trước khi upload
+                                const compressedFile = await compressImage(file, 1000, 0.7);
+
                                 const formData = new FormData();
-                                formData.append("file", file);
+                                formData.append("file", compressedFile);
 
                                 const res = await fetch("/api/upload", {
                                   method: "POST",

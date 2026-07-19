@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import { getCategoriesAction, updateProductAction } from "@/app/actions/admin";
+import { compressImage } from "@/lib/image-utils";
 
 interface Category {
   id: string;
@@ -177,8 +178,11 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
     try {
       setIsUploadingImage(true);
+      // Nén ảnh trước khi gửi (tối đa 1200px, chất lượng 80%)
+      const compressedFile = await compressImage(file, 1200, 0.8);
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressedFile);
 
       const res = await fetch("/api/admin/upload", {
         method: "POST",
