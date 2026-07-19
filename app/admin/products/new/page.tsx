@@ -526,7 +526,8 @@ export default function NewProductPage() {
                 <button
                   type="button"
                   onClick={() => handleAddImage(newImageUrl)}
-                  className="px-6 py-3.5 bg-white text-primary-brown font-bold border-2 border-primary-brown/10 rounded-full text-sm shadow-sm hover:bg-highlight-yellow hover:border-highlight-yellow hover:text-primary-brown cursor-pointer flex items-center gap-2 flex-shrink-0 transition-all"
+                  disabled={!newImageUrl.trim()}
+                  className="px-6 py-3.5 bg-white text-primary-brown font-bold border-2 border-primary-brown/10 rounded-full text-sm shadow-sm hover:bg-highlight-yellow hover:border-highlight-yellow hover:text-primary-brown cursor-pointer flex items-center gap-2 flex-shrink-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-primary-brown/10"
                 >
                   <Plus size={16} />
                   Thêm từ link
@@ -581,7 +582,8 @@ export default function NewProductPage() {
               <button
                 type="button"
                 onClick={handleAddColor}
-                className="px-4 py-2 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 cursor-pointer flex items-center gap-1 flex-shrink-0"
+                disabled={!newColor.trim()}
+                className="px-4 py-2 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 cursor-pointer flex items-center gap-1 flex-shrink-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-accent-red"
               >
                 <Plus size={14} />
                 Thêm
@@ -632,7 +634,8 @@ export default function NewProductPage() {
               <button
                 type="button"
                 onClick={handleAddSize}
-                className="px-4 py-2 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 cursor-pointer flex items-center gap-1 flex-shrink-0"
+                disabled={!newSize.trim()}
+                className="px-4 py-2 bg-accent-red text-white font-bold rounded-full text-xs shadow-sm hover:bg-accent-red/90 cursor-pointer flex items-center gap-1 flex-shrink-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-accent-red"
               >
                 <Plus size={14} />
                 Thêm
