@@ -247,7 +247,6 @@ export default function NewProductPage() {
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       toast.error("Vui lòng kiểm tra lại các thông tin bị lỗi (in đỏ)!");
-      setTimeout(() => , 4000); // Ẩn toast sau 4 giây
       return;
     }
 
@@ -749,13 +748,6 @@ export default function NewProductPage() {
         </section>
       )}
 
-      {/* Toast Error Notification */}
-      {formError && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-full text-sm font-bold shadow-[0_5px_15px_rgba(220,38,38,0.5)] animate-in slide-in-from-bottom-5 fade-in duration-300 flex items-center gap-3">
-          <X size={16} className="bg-white/20 rounded-full p-0.5" />
-          {formError}
-        </div>
-      )}
 
       {/* Action Footer */}
       <div className="pt-2 pb-8 flex justify-end">
