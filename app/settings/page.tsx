@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import SettingsClient from "./SettingsClient";
@@ -9,7 +8,7 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.email) {
     redirect("/auth/signin");

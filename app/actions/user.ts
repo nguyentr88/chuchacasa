@@ -1,8 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import bcrypt from "bcryptjs";
 
 /**
@@ -16,7 +15,7 @@ export async function updateProfileAction({
   image?: string;
 }) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return { success: false, message: "Bạn chưa đăng nhập." };
     }
@@ -34,7 +33,7 @@ export async function updateProfileAction({
     });
 
     return { success: true, message: "Cập nhật hồ sơ thành công!" };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Lỗi cập nhật hồ sơ:", error);
     return { success: false, message: "Đã xảy ra lỗi hệ thống." };
   }
@@ -51,7 +50,7 @@ export async function updatePasswordAction({
   newPassword: string;
 }) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return { success: false, message: "Bạn chưa đăng nhập." };
     }
@@ -94,7 +93,7 @@ export async function updatePasswordAction({
     });
 
     return { success: true, message: "Đổi mật khẩu thành công!" };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Lỗi đổi mật khẩu:", error);
     return { success: false, message: "Đã xảy ra lỗi hệ thống." };
   }
