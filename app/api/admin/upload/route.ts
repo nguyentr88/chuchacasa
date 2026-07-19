@@ -53,8 +53,7 @@ export async function POST(req: NextRequest) {
     if (uploadError) {
       console.error("Supabase Upload Error:", uploadError);
       return NextResponse.json({ 
-        error: `Lỗi từ Supabase: ${uploadError.message}`, 
-        details: uploadError 
+        error: "Lỗi lưu trữ ảnh: Không thể tải ảnh lên máy chủ." 
       }, { status: 500 });
     }
 
@@ -68,6 +67,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url });
   } catch (error: any) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: error.message || "Lỗi khi upload ảnh" }, { status: 500 });
+    return NextResponse.json({ error: "Lỗi hệ thống khi tải ảnh lên." }, { status: 500 });
   }
 }
