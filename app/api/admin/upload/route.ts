@@ -52,7 +52,10 @@ export async function POST(req: NextRequest) {
 
     if (uploadError) {
       console.error("Supabase Upload Error:", uploadError);
-      return NextResponse.json({ error: "Lỗi upload lên Supabase. Vui lòng đảm bảo bạn đã tạo bucket 'uploads' (Public) trên Supabase." }, { status: 500 });
+      return NextResponse.json({ 
+        error: `Lỗi từ Supabase: ${uploadError.message}`, 
+        details: uploadError 
+      }, { status: 500 });
     }
 
     // Lấy public URL
