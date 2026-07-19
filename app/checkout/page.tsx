@@ -122,10 +122,6 @@ export default function CheckoutPage() {
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-heading text-primary-brown font-bold">Thông tin mua hàng</h2>
-                  <Link href="/login" className="flex items-center gap-1.5 text-accent-red text-sm font-bold hover:underline">
-                    <UserCircle2 size={16} />
-                    Đăng nhập
-                  </Link>
                 </div>
                 
                 <div className="space-y-3">
@@ -176,7 +172,8 @@ export default function CheckoutPage() {
                     <span className="text-sm font-medium flex-1">Chuyển khoản toàn bộ</span>
                   </label>
                   
-                  {/* Option 3: COD */}
+                  {/* Option 3: COD (Tạm ẩn vì chưa hỗ trợ) */}
+                  {/*
                   <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-zinc-50 transition-colors">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "COD" ? "border-accent-red" : "border-primary-brown/30"}`}>
                       <div className={`w-2.5 h-2.5 rounded-full bg-accent-red transition-all ${paymentMethod === "COD" ? "scale-100" : "scale-0"}`} />
@@ -184,6 +181,7 @@ export default function CheckoutPage() {
                     <input type="radio" className="hidden" checked={paymentMethod === "COD"} onChange={() => setPaymentMethod("COD")} />
                     <span className="text-sm font-medium flex-1">Thanh toán khi nhận hàng (COD)</span>
                   </label>
+                  */}
                 </div>
 
                 {/* Khu vực hướng dẫn chuyển khoản nếu chọn Cọc hoặc Full */}
@@ -197,8 +195,8 @@ export default function CheckoutPage() {
                     </p>
                     
                     <div className="flex flex-col items-center gap-4">
-                      <div className="w-48 h-48 relative rounded-xl overflow-hidden border border-primary-brown/10 bg-white">
-                        <Image src="/logo/qr-payment.jpeg" alt="QR Payment" fill className="object-cover" />
+                      <div className="w-72 h-72 md:w-80 md:h-80 relative rounded-xl overflow-hidden border border-primary-brown/10 bg-white">
+                        <Image src="/logo/qr-payment.jpeg" alt="QR Payment" fill className="object-contain" />
                       </div>
                       <p className="text-xs text-primary-brown/60 text-center bg-white px-4 py-2 rounded-lg border border-primary-brown/5 shadow-sm">
                         Nội dung chuyển khoản: <br/> 
@@ -229,7 +227,7 @@ export default function CheckoutPage() {
                 Đơn hàng ({items.length} sản phẩm)
               </h2>
 
-              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-6">
+              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 pt-2 custom-scrollbar mb-6">
                 {items.length === 0 ? (
                   <p className="text-sm text-primary-brown/50 italic">Chưa có sản phẩm nào.</p>
                 ) : (

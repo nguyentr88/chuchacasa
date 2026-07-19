@@ -106,9 +106,9 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-out delay-100">
             <button
               onClick={handleAddToCart}
-              className="w-full py-3.5 bg-primary-brown/5 backdrop-blur-md text-primary-brown font-extrabold text-sm rounded-2xl shadow-xl
-                hover:bg-secondary-pink hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]
-                transition-all duration-200 flex items-center justify-center gap-2.5 border-2 border-white/50"
+              className="w-full py-3.5 bg-white/90 backdrop-blur-md text-primary-brown font-extrabold text-sm rounded-2xl shadow-lg
+                hover:bg-accent-red hover:text-white hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:border-accent-red
+                transition-all duration-200 flex items-center justify-center gap-2.5 border-2 border-primary-brown/20"
             >
               <span className="tracking-wide">Thêm vô giỏ hàng</span>
               <ShoppingBag size={18} strokeWidth={2.5} />

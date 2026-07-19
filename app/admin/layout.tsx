@@ -68,6 +68,13 @@ export default async function AdminLayout({
             <Grid size={20} className="text-accent-red" />
             <span>Phân loại</span>
           </Link>
+          <Link
+            href="/admin/orders"
+            className="flex items-center gap-3 px-5 py-4 rounded-full font-bold transition-all hover:bg-highlight-yellow hover:translate-x-1 duration-200"
+          >
+            <FileText size={20} className="text-accent-red" />
+            <span>Đơn hàng</span>
+          </Link>
 
 
           <div className="pt-6 border-t border-primary-brown/10">
