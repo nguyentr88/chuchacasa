@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package, Upload } from "lucide-react";
+import toast from "react-hot-toast";
 import { getCategoriesAction, createProductAction } from "@/app/actions/admin";
 
 interface Category {
@@ -35,7 +36,7 @@ export default function NewProductPage() {
   const [hasDiscount, setHasDiscount] = useState(false);
   const [discountPrice, setDiscountPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [formError, setFormError] = useState("");
+  
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Images List
@@ -128,17 +129,17 @@ export default function NewProductPage() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setFormError("Chỉ chấp nhận file hình ảnh");
+      toast.error("Chỉ chấp nhận file hình ảnh");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setFormError("Kích thước file tối đa 5MB");
+      toast.error("Kích thước file tối đa 5MB");
       return;
     }
 
     setIsUploadingImage(true);
-    setFormError("");
+    ;
 
     const formData = new FormData();
     formData.append("file", file);
@@ -156,7 +157,7 @@ export default function NewProductPage() {
 
       setImages((prev) => [...prev, data.url]);
     } catch (err: any) {
-      setFormError(err.message);
+      toast.error(err.message);
     } finally {
       setIsUploadingImage(false);
       // Xóa giá trị input để có thể chọn lại cùng 1 file
@@ -217,7 +218,7 @@ export default function NewProductPage() {
 
   // Submit Lưu Sản Phẩm
   const handleSaveProduct = () => {
-    setFormError("");
+    ;
     const errors: Record<string, string> = {};
 
     if (!name.trim()) {
@@ -245,8 +246,8 @@ export default function NewProductPage() {
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      setFormError("Vui lòng kiểm tra lại các thông tin bị lỗi (in đỏ)!");
-      setTimeout(() => setFormError(""), 4000); // Ẩn toast sau 4 giây
+      toast.error("Vui lòng kiểm tra lại các thông tin bị lỗi (in đỏ)!");
+      setTimeout(() => , 4000); // Ẩn toast sau 4 giây
       return;
     }
 
@@ -279,12 +280,14 @@ export default function NewProductPage() {
         });
 
         if (res.error) {
-          setFormError(res.error);
+          toast.error(res.error);
         } else {
+          toast.success("Thêm sản phẩm thành công!");
           router.push("/admin/products");
+          router.refresh();
         }
       } catch (err) {
-        setFormError("Đã xảy ra lỗi hệ thống trong quá trình đăng sản phẩm.");
+        toast.error("Đã xảy ra lỗi hệ thống trong quá trình đăng sản phẩm.");
       }
     });
   };

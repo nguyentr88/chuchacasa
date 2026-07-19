@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Plus, X, Image as ImageIcon, Sparkles, Tag, Layers, Loader2, DollarSign, Package, Upload } from "lucide-react";
+import toast from "react-hot-toast";
 import { getCategoriesAction, updateProductAction } from "@/app/actions/admin";
 
 interface Category {
@@ -61,7 +62,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
   const [hasDiscount, setHasDiscount] = useState(product.hasDiscount);
   const [discountPrice, setDiscountPrice] = useState(product.discountPrice ? product.discountPrice.toString() : "");
   const [categoryId, setCategoryId] = useState(product.categoryId);
-  const [formError, setFormError] = useState("");
+
 
   // Images List
   const [images, setImages] = useState<string[]>(product.images);
@@ -170,7 +171,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      setFormError("Kích thước ảnh không được vượt quá 5MB");
+      toast.error("Kích thước ảnh không được vượt quá 5MB");
       return;
     }
 
@@ -191,7 +192,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
       setImages((prev) => [...prev, data.url]);
     } catch (err: any) {
-      setFormError(err.message);
+      toast.error(err.message);
     } finally {
       setIsUploadingImage(false);
       if (e.target) e.target.value = '';
@@ -249,16 +250,15 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
   // Submit Cập nhật Sản Phẩm
   const handleSaveProduct = () => {
-    setFormError("");
 
     if (!name.trim()) {
-      setFormError("Vui lòng nhập tên sản phẩm!");
+      toast.error("Vui lòng nhập tên sản phẩm!");
       return;
     }
 
     const basePriceNum = parseInt(price);
     if (isNaN(basePriceNum) || basePriceNum <= 0) {
-      setFormError("Vui lòng nhập giá gốc hợp lệ!");
+      toast.error("Vui lòng nhập giá gốc hợp lệ!");
       return;
     }
 
@@ -266,22 +266,22 @@ export default function EditProductForm({ product }: EditProductFormProps) {
     if (hasDiscount) {
       discPriceNum = parseInt(discountPrice);
       if (isNaN(discPriceNum) || discPriceNum <= 0) {
-        setFormError("Vui lòng nhập giá giảm hợp lệ!");
+        toast.error("Vui lòng nhập giá giảm hợp lệ!");
         return;
       }
       if (discPriceNum >= basePriceNum) {
-        setFormError("Giá giảm phải nhỏ hơn giá gốc sản phẩm!");
+        toast.error("Giá giảm phải nhỏ hơn giá gốc sản phẩm!");
         return;
       }
     }
 
     if (!categoryId) {
-      setFormError("Vui lòng chọn phân loại sản phẩm!");
+      toast.error("Vui lòng chọn phân loại sản phẩm!");
       return;
     }
 
     if (images.length === 0) {
-      setFormError("Vui lòng thêm ít nhất 1 hình ảnh cho sản phẩm!");
+      toast.error("Vui lòng thêm ít nhất 1 hình ảnh cho sản phẩm!");
       return;
     }
 
@@ -312,13 +312,14 @@ export default function EditProductForm({ product }: EditProductFormProps) {
         });
 
         if (res.error) {
-          setFormError(res.error);
+          toast.error(res.error);
         } else {
+          toast.success("Cập nhật sản phẩm thành công!");
           router.push("/admin/products");
           router.refresh();
         }
       } catch (err) {
-        setFormError("Đã xảy ra lỗi hệ thống trong quá trình cập nhật sản phẩm.");
+        toast.error("Đã xảy ra lỗi hệ thống trong quá trình cập nhật sản phẩm.");
       }
     });
   };
@@ -357,12 +358,6 @@ export default function EditProductForm({ product }: EditProductFormProps) {
           )}
         </button>
       </div>
-
-      {formError && (
-        <div className="bg-red-50 text-red-500 p-4 rounded-3xl text-sm font-bold border border-red-100 text-center">
-          {formError}
-        </div>
-      )}
 
       {/* Main Form Body Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">

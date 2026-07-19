@@ -23,6 +23,7 @@ import Header from "@/components/Header";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { CartProvider } from "@/components/providers/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
   children,
@@ -40,6 +41,7 @@ export default function RootLayout({
             <Header />
             {children}
             <CartDrawer />
+            <Toaster position="bottom-right" toastOptions={{ duration: 4000, style: { borderRadius: '1rem', background: '#fff', color: '#5B4033', border: '1px solid #FFE4E1', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontWeight: 'bold' } }} />
           </CartProvider>
         </SessionProvider>
       </body>
