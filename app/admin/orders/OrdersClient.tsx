@@ -146,7 +146,11 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderWi
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-primary-brown/70">Thanh toán:</span>
-                    <span className="font-bold">{order.paymentMethod === "TRANSFER_PARTIAL" ? "Cọc 50k" : order.paymentMethod === "TRANSFER_FULL" ? "CK Toàn bộ" : "COD"}</span>
+                    <span className="font-bold">{order.paymentMethod === "TRANSFER_PARTIAL" ? "Cọc 50k (cũ)" : order.paymentMethod === "TRANSFER_FULL" ? "CK toàn bộ" : "Ship COD"}</span>
+                  </div>
+                  <div className="flex justify-between text-xs mt-1">
+                    <span className="text-primary-brown/70">Gói hàng:</span>
+                    <span className="font-bold">{order.packaging === "GIFT" ? "🎁 Hộp quà + nơ" : "Gói thường"}</span>
                   </div>
                 </div>
 

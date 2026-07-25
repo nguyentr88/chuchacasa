@@ -29,11 +29,14 @@ export default function CheckoutPage() {
     notes: ""
   });
 
-  const [paymentMethod, setPaymentMethod] = useState<"COD" | "TRANSFER_PARTIAL" | "TRANSFER_FULL">("TRANSFER_PARTIAL");
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "TRANSFER_FULL">("TRANSFER_FULL");
+  const [packaging, setPackaging] = useState<"STANDARD" | "GIFT">("STANDARD");
   const [paymentProof, setPaymentProof] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  const shippingFee = items.length > 0 ? 30000 : 0; // Tạm tính 30k ship
+  // Phí ship thường toàn quốc: đồng giá 14.000đ/đơn (gói quà miễn phí)
+  const SHIPPING_FEE = 14000;
+  const shippingFee = items.length > 0 ? SHIPPING_FEE : 0;
   const totalAmount = cartTotal + shippingFee;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -50,10 +53,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (
-      (paymentMethod === "TRANSFER_PARTIAL" || paymentMethod === "TRANSFER_FULL") 
-      && !paymentProof
-    ) {
+    if (paymentMethod === "TRANSFER_FULL" && !paymentProof) {
       setError("Vui lòng tải lên ảnh chụp màn hình hóa đơn chuyển khoản.");
       return;
     }
@@ -70,8 +70,10 @@ export default function CheckoutPage() {
       shippingDistrict: formData.district,
       shippingWard: formData.ward,
       shippingNotes: formData.notes,
+      shippingMethod: "STANDARD",
+      packaging,
       paymentMethod: paymentMethod as any,
-      paymentProof,
+      paymentProof: paymentMethod === "TRANSFER_FULL" ? paymentProof : "",
       items: items.map(item => ({
         productId: item.productId,
         name: item.name,
@@ -156,8 +158,62 @@ export default function CheckoutPage() {
               {/* Vận chuyển */}
               <section>
                 <h2 className="text-xl font-heading text-primary-brown font-bold mb-4">Vận chuyển</h2>
-                <div className="w-full p-4 bg-sky-50 border border-sky-100 rounded-md text-sm text-sky-800">
-                  Phí giao hàng toàn quốc: 30.000 VNĐ
+
+                <div className="space-y-3">
+                  {/* Ship thường toàn quốc (áp dụng cho đơn này) */}
+                  <div className="w-full p-4 bg-sky-50 border border-sky-100 rounded-md text-sm text-sky-900">
+                    <div className="flex items-center justify-between font-bold mb-1.5">
+                      <span>🚚 Ship thường toàn quốc</span>
+                      <span className="text-accent-red">14.000đ/đơn</span>
+                    </div>
+                    <ul className="text-xs text-sky-800/90 space-y-0.5 list-disc list-inside">
+                      <li>HCM: 2–3 ngày nhận được hàng</li>
+                      <li>Các tỉnh khác: 3–5 ngày nhận được hàng</li>
+                    </ul>
+                  </div>
+
+                  {/* Ship hỏa tốc / trong ngày tại HCM (liên hệ Zalo) */}
+                  <div className="w-full p-4 bg-amber-50 border border-amber-100 rounded-md text-sm text-amber-900">
+                    <p className="font-bold mb-1">⚡ Ship hỏa tốc / nhận hàng trong ngày tại HCM</p>
+                    <p className="text-xs text-amber-800/90">
+                      Vui lòng liên hệ Zalo{" "}
+                      <a
+                        href="https://zalo.me/0935254156"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-accent-red underline underline-offset-2"
+                      >
+                        0935 254 156
+                      </a>{" "}
+                      để được hỗ trợ nhanh nhất.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Gói hàng */}
+              <section>
+                <h2 className="text-xl font-heading text-primary-brown font-bold mb-4">Gói hàng</h2>
+                <div className="border border-primary-brown/20 rounded-md overflow-hidden bg-white">
+                  {/* Gói thường */}
+                  <label className="flex items-center gap-3 p-4 border-b border-primary-brown/10 cursor-pointer hover:bg-zinc-50 transition-colors">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${packaging === "STANDARD" ? "border-accent-red" : "border-primary-brown/30"}`}>
+                      <div className={`w-2.5 h-2.5 rounded-full bg-accent-red transition-all ${packaging === "STANDARD" ? "scale-100" : "scale-0"}`} />
+                    </div>
+                    <input type="radio" className="hidden" checked={packaging === "STANDARD"} onChange={() => setPackaging("STANDARD")} />
+                    <span className="text-sm font-medium flex-1">Gói thường <span className="text-primary-brown/50">(mua về sử dụng)</span></span>
+                    <span className="text-xs font-bold text-green-600">Miễn phí</span>
+                  </label>
+
+                  {/* Gói hộp quà + thắt nơ */}
+                  <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-zinc-50 transition-colors">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${packaging === "GIFT" ? "border-accent-red" : "border-primary-brown/30"}`}>
+                      <div className={`w-2.5 h-2.5 rounded-full bg-accent-red transition-all ${packaging === "GIFT" ? "scale-100" : "scale-0"}`} />
+                    </div>
+                    <input type="radio" className="hidden" checked={packaging === "GIFT"} onChange={() => setPackaging("GIFT")} />
+                    <span className="text-sm font-medium flex-1">🎁 Gói hộp quà + thắt nơ <span className="text-primary-brown/50">(mua tặng)</span></span>
+                    <span className="text-xs font-bold text-green-600">Miễn phí</span>
+                  </label>
                 </div>
               </section>
 
@@ -166,44 +222,40 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-heading text-primary-brown font-bold mb-4">Thanh toán</h2>
                 
                 <div className="border border-primary-brown/20 rounded-md overflow-hidden bg-white">
-                  
-                  {/* Option 1: Cọc 50k */}
-                  <label className="flex items-center gap-3 p-4 border-b border-primary-brown/10 cursor-pointer hover:bg-zinc-50 transition-colors">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "TRANSFER_PARTIAL" ? "border-accent-red" : "border-primary-brown/30"}`}>
-                      <div className={`w-2.5 h-2.5 rounded-full bg-accent-red transition-all ${paymentMethod === "TRANSFER_PARTIAL" ? "scale-100" : "scale-0"}`} />
-                    </div>
-                    <input type="radio" className="hidden" checked={paymentMethod === "TRANSFER_PARTIAL"} onChange={() => setPaymentMethod("TRANSFER_PARTIAL")} />
-                    <span className="text-sm font-medium flex-1">Cọc 50k, nhắn mã đơn/sđt qua IG</span>
-                  </label>
 
-                  {/* Option 2: Full Transfer */}
+                  {/* Option 1: Chuyển khoản toàn bộ (CK full) */}
                   <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-zinc-50 transition-colors border-b border-primary-brown/10">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "TRANSFER_FULL" ? "border-accent-red" : "border-primary-brown/30"}`}>
                       <div className={`w-2.5 h-2.5 rounded-full bg-accent-red transition-all ${paymentMethod === "TRANSFER_FULL" ? "scale-100" : "scale-0"}`} />
                     </div>
                     <input type="radio" className="hidden" checked={paymentMethod === "TRANSFER_FULL"} onChange={() => setPaymentMethod("TRANSFER_FULL")} />
-                    <span className="text-sm font-medium flex-1">Chuyển khoản toàn bộ</span>
+                    <span className="text-sm font-medium flex-1">Chuyển khoản toàn bộ (CK full)</span>
                   </label>
-                  
-                  {/* Option 3: COD (Tạm ẩn vì chưa hỗ trợ) */}
-                  {/*
+
+                  {/* Option 2: COD */}
                   <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-zinc-50 transition-colors">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "COD" ? "border-accent-red" : "border-primary-brown/30"}`}>
                       <div className={`w-2.5 h-2.5 rounded-full bg-accent-red transition-all ${paymentMethod === "COD" ? "scale-100" : "scale-0"}`} />
                     </div>
                     <input type="radio" className="hidden" checked={paymentMethod === "COD"} onChange={() => setPaymentMethod("COD")} />
-                    <span className="text-sm font-medium flex-1">Thanh toán khi nhận hàng (COD)</span>
+                    <span className="text-sm font-medium flex-1">Thanh toán khi nhận hàng (Ship COD)</span>
                   </label>
-                  */}
                 </div>
 
-                {/* Khu vực hướng dẫn chuyển khoản nếu chọn Cọc hoặc Full */}
-                {(paymentMethod === "TRANSFER_PARTIAL" || paymentMethod === "TRANSFER_FULL") && (
+                {/* Thông tin khi chọn COD */}
+                {paymentMethod === "COD" && (
+                  <div className="mt-4 p-4 bg-green-50 border border-green-100 rounded-md text-sm text-green-800 animate-in fade-in slide-in-from-top-2">
+                    Bạn sẽ thanh toán <span className="font-bold">{totalAmount.toLocaleString("vi-VN")}đ</span> (đã gồm phí ship) bằng tiền mặt cho đơn vị vận chuyển khi nhận hàng.
+                  </div>
+                )}
+
+                {/* Khu vực hướng dẫn chuyển khoản khi chọn CK full */}
+                {paymentMethod === "TRANSFER_FULL" && (
                   <div className="mt-4 p-6 bg-zinc-50 border border-primary-brown/10 rounded-md animate-in fade-in slide-in-from-top-2">
                     <p className="text-sm mb-4 text-center">
                       Quý khách vui lòng quét mã QR dưới đây và chuyển khoản số tiền: <br/>
                       <span className="font-bold text-accent-red text-xl mt-2 block">
-                        {paymentMethod === "TRANSFER_PARTIAL" ? "50.000 VNĐ" : `${totalAmount.toLocaleString("vi-VN")} VNĐ`}
+                        {totalAmount.toLocaleString("vi-VN")} VNĐ
                       </span>
                     </p>
                     
@@ -352,6 +404,10 @@ export default function CheckoutPage() {
                 <div className="flex justify-between">
                   <span className="text-primary-brown/70">Phí vận chuyển</span>
                   <span>{shippingFee.toLocaleString("vi-VN")}đ</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-primary-brown/70">Gói hàng</span>
+                  <span>{packaging === "GIFT" ? "Hộp quà + nơ (miễn phí)" : "Gói thường"}</span>
                 </div>
               </div>
 

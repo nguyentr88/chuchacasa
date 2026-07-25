@@ -1,7 +1,10 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { PaymentMethod, OrderStatus } from "@/lib/generated/prisma";
+import { PaymentMethod, OrderStatus, PackagingType } from "@/lib/generated/prisma";
+
+// Phí ship thường toàn quốc: đồng giá 14.000đ/đơn
+const SHIPPING_FEE = 14000;
 
 interface CheckoutData {
   customerName: string;
@@ -12,6 +15,8 @@ interface CheckoutData {
   shippingDistrict?: string;
   shippingWard?: string;
   shippingNotes?: string;
+  shippingMethod?: string;
+  packaging?: PackagingType;
   paymentMethod: PaymentMethod;
   paymentProof?: string;
   items: {
@@ -39,12 +44,15 @@ export async function createOrderAction(data: CheckoutData) {
       return { success: false, error: "Giỏ hàng của bạn đang trống." };
     }
 
-    if (
-      (data.paymentMethod === PaymentMethod.TRANSFER_PARTIAL || data.paymentMethod === PaymentMethod.TRANSFER_FULL) 
-      && !data.paymentProof
-    ) {
+    // Chỉ hình thức chuyển khoản toàn bộ mới bắt buộc ảnh hóa đơn (COD thì không cần)
+    if (data.paymentMethod === PaymentMethod.TRANSFER_FULL && !data.paymentProof) {
       return { success: false, error: "Vui lòng tải lên ảnh chụp màn hình hóa đơn chuyển khoản." };
     }
+
+    // Tính lại số tiền ở phía server để tránh bị chỉnh sửa từ client
+    const subtotal = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shippingFee = data.items.length > 0 ? SHIPPING_FEE : 0;
+    const totalAmount = subtotal + shippingFee; // Gói quà miễn phí -> không cộng thêm
 
     // Tạo mã đơn hàng random (Ví dụ: #CC-12345678)
     const orderNumber = `#CC-${Math.floor(10000000 + Math.random() * 90000000)}`;
@@ -60,11 +68,13 @@ export async function createOrderAction(data: CheckoutData) {
         shippingDistrict: data.shippingDistrict,
         shippingWard: data.shippingWard,
         shippingNotes: data.shippingNotes,
+        shippingMethod: data.shippingMethod || "STANDARD",
+        packaging: data.packaging || PackagingType.STANDARD,
         paymentMethod: data.paymentMethod,
-        paymentProof: data.paymentProof,
-        subtotal: data.subtotal,
-        shippingFee: data.shippingFee,
-        totalAmount: data.totalAmount,
+        paymentProof: data.paymentMethod === PaymentMethod.TRANSFER_FULL ? data.paymentProof : null,
+        subtotal,
+        shippingFee,
+        totalAmount,
         status: OrderStatus.PENDING,
         items: {
           create: data.items.map(item => ({

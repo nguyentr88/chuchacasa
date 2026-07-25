@@ -111,8 +111,13 @@ enum OrderStatus {
 
 enum PaymentMethod {
   COD
-  TRANSFER_PARTIAL // Cọc 50k
-  TRANSFER_FULL    // Chuyển toàn bộ
+  TRANSFER_PARTIAL // Cọc 50k (đã ngừng sử dụng, giữ lại cho đơn cũ)
+  TRANSFER_FULL    // Chuyển khoản toàn bộ
+}
+
+enum PackagingType {
+  STANDARD // Gói thường (khách mua về sử dụng)
+  GIFT     // Gói hộp quà + thắt nơ (khách mua tặng)
 }
 
 model Order {
@@ -130,6 +135,10 @@ model Order {
   shippingDistrict String?
   shippingWard    String?
   shippingNotes   String?       @db.Text
+
+  // Shipping method & packaging
+  shippingMethod  String        @default("STANDARD") // STANDARD (thường toàn quốc). Hỏa tốc HCM xử lý qua Zalo.
+  packaging       PackagingType @default(STANDARD)
 
   // Payment
   paymentMethod   PaymentMethod
