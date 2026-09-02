@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { OrderStatus } from "@/lib/generated/prisma";
 import { updateOrderStatusAction } from "@/app/actions/admin-orders";
-import { Loader2, CheckCircle2, Search, X } from "lucide-react";
+import { Loader2, CheckCircle2, Search, X, Download } from "lucide-react";
 import Image from "next/image";
 
 type OrderWithItems = any; // Simplifying type for client
@@ -62,6 +62,61 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderWi
 
   const filteredOrders = statusFilter === "ALL" ? orders : orders.filter(o => o.status === statusFilter);
 
+  const exportToCSV = () => {
+    // CSV Header
+    const headers = [
+      "Mã ĐH", "Ngày đặt", "Trạng thái", "Tên khách hàng", "SĐT", "Email", 
+      "Địa chỉ giao", "Thành phố", "Quận/Huyện", "Phường/Xã", "Ghi chú", 
+      "Phương thức ship", "Loại đóng gói", "Phương thức thanh toán", 
+      "Tổng tiền", "Sản phẩm"
+    ];
+
+    // CSV Rows
+    const rows = filteredOrders.map(order => {
+      const itemsString = order.items.map((i: any) => 
+        `${i.productName} (SKU: ${i.sku || 'N/A'}, Màu: ${i.color || 'N/A'}, Size: ${i.size || 'N/A'}) x${i.quantity}`
+      ).join(" | ");
+
+      const address = `"${order.shippingAddress?.replace(/"/g, '""') || ''}"`;
+      const notes = `"${order.shippingNotes?.replace(/"/g, '""') || ''}"`;
+      const items = `"${itemsString.replace(/"/g, '""')}"`;
+      const customerName = `"${order.customerName?.replace(/"/g, '""') || ''}"`;
+      
+      const date = new Date(order.createdAt).toLocaleString("vi-VN");
+
+      return [
+        order.orderNumber,
+        date,
+        order.status,
+        customerName,
+        order.customerPhone,
+        order.customerEmail || "",
+        address,
+        order.shippingCity || "",
+        order.shippingDistrict || "",
+        order.shippingWard || "",
+        notes,
+        order.shippingMethod,
+        order.packaging,
+        order.paymentMethod,
+        order.totalAmount,
+        items
+      ].join(",");
+    });
+
+    // Add BOM for Excel UTF-8 support
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Don_Hang_ChuchaCasa_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 p-6 rounded-[2rem] border-2 border-primary-brown/5 backdrop-blur-md">
@@ -70,23 +125,33 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderWi
           <p className="text-primary-brown/70 mt-1">Quản lý và cập nhật trạng thái đơn hàng của khách.</p>
         </div>
         
-        {/* Lọc trạng thái */}
-        <div className="flex bg-white rounded-full border border-primary-brown/10 p-1 shadow-sm overflow-x-auto max-w-full">
-          <button 
-            onClick={() => setStatusFilter("ALL")}
-            className={`px-4 py-2 text-sm font-bold rounded-full whitespace-nowrap transition-colors ${statusFilter === "ALL" ? "bg-primary-brown text-white" : "text-primary-brown/60 hover:text-primary-brown"}`}
-          >
-            Tất cả
-          </button>
-          {statusOptions.map(opt => (
+        {/* Lọc trạng thái & Nút xuất */}
+        <div className="flex flex-col sm:flex-row gap-3 items-end sm:items-center">
+          <div className="flex bg-white rounded-full border border-primary-brown/10 p-1 shadow-sm overflow-x-auto max-w-full">
             <button 
-              key={opt.value}
-              onClick={() => setStatusFilter(opt.value)}
-              className={`px-4 py-2 text-sm font-bold rounded-full whitespace-nowrap transition-colors ${statusFilter === opt.value ? "bg-primary-brown text-white" : "text-primary-brown/60 hover:text-primary-brown"}`}
+              onClick={() => setStatusFilter("ALL")}
+              className={`px-4 py-2 text-sm font-bold rounded-full whitespace-nowrap transition-colors ${statusFilter === "ALL" ? "bg-primary-brown text-white" : "text-primary-brown/60 hover:text-primary-brown"}`}
             >
-              {opt.label}
+              Tất cả
             </button>
-          ))}
+            {statusOptions.map(opt => (
+              <button 
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                className={`px-4 py-2 text-sm font-bold rounded-full whitespace-nowrap transition-colors ${statusFilter === opt.value ? "bg-primary-brown text-white" : "text-primary-brown/60 hover:text-primary-brown"}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full font-bold text-sm shadow-sm transition-colors whitespace-nowrap"
+          >
+            <Download size={16} />
+            <span>Xuất CSV</span>
+          </button>
         </div>
       </div>
 

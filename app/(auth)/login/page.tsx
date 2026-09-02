@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
-import { FacebookIcon } from "@/components/icons/FacebookIcon";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, LoginFormData } from "@/types/auth";
@@ -138,9 +137,10 @@ export default function LoginPage() {
           </div>
 
           {/* Social Logins */}
-          <div className="grid grid-cols-2 gap-4">
-            <button 
-              type="button" 
+          <div className="grid grid-cols-1 gap-4">
+            <button
+              type="button"
+              disabled={isPending}
               onClick={() => {
                 startTransition(() => {
                   import("@/app/actions/auth").then(({ googleLoginAction }) => {
@@ -148,14 +148,10 @@ export default function LoginPage() {
                   });
                 });
               }}
-              className="flex items-center justify-center gap-2 py-3 bg-white border-2 border-primary-brown/10 rounded-full hover:bg-zinc-50 transition-colors font-bold text-sm"
+              className="flex items-center justify-center gap-2 py-3 bg-white border-2 border-primary-brown/10 rounded-full hover:bg-zinc-50 transition-colors font-bold text-sm disabled:opacity-60"
             >
               <GoogleIcon />
-              Google
-            </button>
-            <button type="button" className="flex items-center justify-center gap-2 py-3 bg-[#1877F2] text-white border-2 border-[#1877F2] rounded-full hover:opacity-90 transition-opacity font-bold text-sm">
-              <FacebookIcon />
-              Facebook
+              Tiếp tục với Google
             </button>
           </div>
         </div>

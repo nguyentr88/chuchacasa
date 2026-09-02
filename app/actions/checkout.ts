@@ -1,7 +1,9 @@
 "use server";
 
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { PaymentMethod, OrderStatus, PackagingType } from "@/lib/generated/prisma";
+import { notifyNewOrder } from "@/lib/order-notifications";
 
 // Phí ship thường toàn quốc: đồng giá 14.000đ/đơn
 const SHIPPING_FEE = 14000;
@@ -88,6 +90,37 @@ export async function createOrderAction(data: CheckoutData) {
           }))
         }
       }
+    });
+
+    // Gửi email thông báo + ghi vào Google Sheet SAU khi đã trả kết quả cho khách,
+    // để không làm chậm bước đặt hàng. Lỗi ở đây không ảnh hưởng đơn đã tạo.
+    after(async () => {
+      await notifyNewOrder({
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        customerEmail: order.customerEmail,
+        shippingAddress: order.shippingAddress,
+        shippingCity: order.shippingCity,
+        shippingDistrict: order.shippingDistrict,
+        shippingWard: order.shippingWard,
+        shippingNotes: order.shippingNotes,
+        paymentMethod: order.paymentMethod,
+        packaging: order.packaging,
+        shippingMethod: order.shippingMethod,
+        paymentProof: order.paymentProof,
+        subtotal: order.subtotal,
+        shippingFee: order.shippingFee,
+        totalAmount: order.totalAmount,
+        createdAt: order.createdAt,
+        items: data.items.map((it) => ({
+          name: it.name,
+          quantity: it.quantity,
+          price: it.price,
+          color: it.color,
+          size: it.size,
+        })),
+      });
     });
 
     return { success: true, orderId: order.id, orderNumber: order.orderNumber };
